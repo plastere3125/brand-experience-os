@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && pnpm install && cd apps/newdia && pnpm build",
+  "outputDirectory": ".next",
+  "installCommand": "echo skip"
+}
