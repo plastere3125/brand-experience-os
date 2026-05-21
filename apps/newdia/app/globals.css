@@ -1,36 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --black: #0a0a0a;
-  --white: #ffffff;
+  --black:   #0a0a0a;
+  --white:   #ffffff;
   --gray-50: #fafafa;
-  --gray-100: #f5f5f5;
-  --gray-200: #e5e5e5;
-  --gray-400: #999999;
-  --gray-600: #666666;
-  --gray-800: #333333;
-  --lime: #cbdb2a;
+  --gray-100:#f5f5f5;
+  --gray-200:#e5e5e5;
+  --gray-400:#999999;
+  --gray-600:#666666;
+  --gray-800:#333333;
+  --lime:    #cbdb2a;
   --container: 1200px;
-  --header-h: 80px;
+  --header-h:  80px;
+  --mono: 'SF Mono', 'Fira Mono', 'Courier New', monospace;
 }
 
-*, *::before, *::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
   font-size: 16px;
   line-height: 1.6;
   color: var(--black);
   background: var(--white);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'tnum' 1;
 }
 
 img { max-width: 100%; height: auto; display: block; }
@@ -38,83 +35,126 @@ a { color: inherit; text-decoration: none; }
 button { font: inherit; cursor: pointer; border: none; background: none; }
 ul { list-style: none; padding: 0; margin: 0; }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--gray-100); }
-::-webkit-scrollbar-thumb { background: var(--gray-400); border-radius: 2px; }
+::-webkit-scrollbar { width: 2px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--black); }
 
 ::selection { background: var(--lime); color: var(--black); }
 
+/* ──────────────────────────────────────────
+   STRUCTURAL TYPOGRAPHY SYSTEM
+   "글자가 공간을 지배한다"
+────────────────────────────────────────── */
+
+/* 구조 라벨 — 가장 작은 계층 */
 .nd-label {
   display: block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--lime);
+  font-feature-settings: 'tnum';
 }
+
+/* 단행 인덱스 — 아키텍처 측정 라벨 */
+.nd-index {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--gray-400);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 시스템 코드 라벨 */
+.nd-code {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+}
+
+/* ──────────────────────────────────────────
+   LAYOUT
+────────────────────────────────────────── */
 
 .nd-container {
   max-width: var(--container);
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 32px;
 }
 
-.nd-section {
-  padding: 120px 0;
-}
+.nd-section { padding: 120px 0; }
 
 @media (max-width: 768px) {
-  .nd-section { padding: 80px 0; }
+  .nd-section { padding: 72px 0; }
   .nd-container { padding: 0 20px; }
 }
 
+/* ──────────────────────────────────────────
+   BUTTONS
+────────────────────────────────────────── */
+
 .nd-btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 32px;
-  background: var(--black);
-  color: var(--white);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  transition: background 0.2s ease, transform 0.2s ease;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 28px;
+  background: var(--black); color: var(--white);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: background 0.2s;
 }
-.nd-btn-primary:hover {
-  background: #222;
-  transform: translateY(-1px);
-}
+.nd-btn-primary:hover { background: #1a1a1a; }
 
 .nd-btn-outline {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 13px 31px;
-  border: 1px solid var(--black);
-  color: var(--black);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  transition: background 0.2s ease, color 0.2s ease;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 27px;
+  border: 1px solid var(--black); color: var(--black);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: background 0.2s, color 0.2s;
 }
-.nd-btn-outline:hover {
-  background: var(--black);
-  color: var(--white);
-}
+.nd-btn-outline:hover { background: var(--black); color: var(--white); }
 
 .nd-btn-lime {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 32px;
-  background: var(--lime);
-  color: var(--black);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  transition: filter 0.2s ease, transform 0.2s ease;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 28px;
+  background: var(--lime); color: var(--black);
+  font-size: 13px; font-weight: 700; letter-spacing: 0.04em;
+  transition: filter 0.2s;
 }
-.nd-btn-lime:hover {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
+.nd-btn-lime:hover { filter: brightness(1.06); }
+
+/* ──────────────────────────────────────────
+   STRUCTURAL GRID OVERLAY
+   두 사이트를 관통하는 물리적 흔적
+────────────────────────────────────────── */
+.nd-structure-ghost {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(var(--gray-200) 1px, transparent 1px),
+    linear-gradient(90deg, var(--gray-200) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: 0.3;
+}
+
+/* ──────────────────────────────────────────
+   TRANSITION ECHO — SM에서 돌아올 때 잔상
+────────────────────────────────────────── */
+@keyframes nd-echo-fade {
+  0%   { opacity: 0.18; }
+  100% { opacity: 0; }
+}
+.nd-perspective-echo {
+  position: fixed; inset: 0; pointer-events: none; z-index: 8000;
+  background: linear-gradient(135deg, rgba(0,174,239,0.04) 0%, transparent 60%);
+  animation: nd-echo-fade 2s ease-out forwards;
+}
+.nd-echo-line {
+  position: fixed; top: 0; left: 50%; width: 1px; height: 100vh;
+  background: linear-gradient(to bottom, rgba(0,174,239,0.12), transparent);
+  pointer-events: none; z-index: 8000;
+  animation: nd-echo-fade 2.5s ease-out forwards;
 }

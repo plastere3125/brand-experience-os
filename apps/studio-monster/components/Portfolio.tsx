@@ -3,34 +3,35 @@
 import { useState, useCallback } from 'react'
 import { siteData, type PortfolioCategory, type PortfolioItem } from '@beos/core/portfolio'
 
-// ─────────────────────────────────────────────────────────────
-// 핵심 철학:
-// 이미지는 "보여주는" 것이 아니다.
-// 렌즈가 이동하면서 "다른 현실이 드러나는" 것이다.
-//
-// initial position = 사용자가 처음 보는 현실의 단편
-// reveal position  = 관점이 이동한 후 드러나는 다른 단편
-//
-// 두 position 사이의 transition = 관점 이동의 순간
-// ─────────────────────────────────────────────────────────────
-
 type SMCat = 'ALL' | 'BRANDING' | 'WEB' | 'PHOTO' | 'MARKETING'
 const CAT_MAP: Record<PortfolioCategory, SMCat> = {
   visual: 'BRANDING', web: 'WEB', photo: 'PHOTO', marketing: 'MARKETING',
 }
 
-// 관점 이동 쌍 — initial에서 reveal로 렌즈가 이동
+// ─────────────────────────────────────────────────────────────
+// 극단적 렌즈 이동 — 이미지의 "시선"만 보인다.
+// 결과물을 보여주는 것이 아니라 관점을 보여주는 것이다.
+// ─────────────────────────────────────────────────────────────
 const LENS_PAIRS = [
-  { initial: '12% 15%', reveal: '86% 82%' },  // TL → BR (대각선 이동)
-  { initial: '84% 12%', reveal: '16% 85%' },  // TR → BL
-  { initial: '50% 8%',  reveal: '50% 90%' },  // 상단 → 하단 (수직 이동)
-  { initial: '14% 82%', reveal: '84% 18%' },  // BL → TR
-  { initial: '88% 80%', reveal: '12% 18%' },  // BR → TL
-  { initial: '20% 50%', reveal: '80% 50%' },  // 좌 → 우 (수평 이동)
-  { initial: '78% 22%', reveal: '22% 76%' },  // TR → BL 완만
-  { initial: '46% 88%', reveal: '54% 10%' },  // 하단 → 상단
+  { initial: '4% 5%',   reveal: '96% 95%' },  // 극단 TL → BR
+  { initial: '96% 3%',  reveal: '4% 97%' },   // 극단 TR → BL
+  { initial: '50% 2%',  reveal: '50% 98%' },  // 극단 top → bottom
+  { initial: '3% 94%',  reveal: '97% 6%' },   // 극단 BL → TR
+  { initial: '97% 95%', reveal: '3% 5%' },    // 극단 BR → TL
+  { initial: '5% 50%',  reveal: '95% 50%' },  // 극단 L → R
+  { initial: '94% 8%',  reveal: '6% 92%' },   // 대각선
+  { initial: '50% 97%', reveal: '50% 3%' },   // 극단 bottom → top
 ]
 
+// 파편 타입 — 무엇을 "보는가"가 중요하다
+type FragType = 'TEXTURE' | 'STRUCTURE' | 'LINE' | 'CURVE' | 'DETAIL'
+const FRAG_CYCLE: FragType[] = [
+  'TEXTURE', 'STRUCTURE', 'LINE', 'CURVE', 'DETAIL',
+  'STRUCTURE', 'TEXTURE', 'DETAIL', 'LINE', 'CURVE',
+  'STRUCTURE', 'DETAIL',
+]
+
+// 비대칭 스팬 패턴 — 구조적 긴장감
 const SPAN_PATTERN = [2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1]
 
 function coordLabel(index: number, shifted: boolean): string {
@@ -42,19 +43,23 @@ function coordLabel(index: number, shifted: boolean): string {
 
 function buildItems() {
   const out: (PortfolioItem & {
-    smCat: SMCat; span: number
+    smCat: SMCat
+    span: number
     lens: { initial: string; reveal: string }
+    frag: FragType
     coord: string
   })[] = []
   let i = 0
-  for (const [key, items] of Object.entries(siteData.gallery)) {
+  for (const [key, items] of Object.entries(siteData.gallery) as [PortfolioCategory, PortfolioItem[]][]) {
+    const smCat = CAT_MAP[key]
     for (const item of items) {
       out.push({
         ...item,
-        smCat: CAT_MAP[key as PortfolioCategory],
+        smCat,
         span: SPAN_PATTERN[i % SPAN_PATTERN.length],
         lens: LENS_PAIRS[i % LENS_PAIRS.length],
-        coord: coordLabel(i, false),
+        frag: FRAG_CYCLE[i % FRAG_CYCLE.length],
+        coord: coordLabel(item.id, false),
       })
       i++
     }
@@ -63,28 +68,34 @@ function buildItems() {
 }
 
 const ALL_ITEMS = buildItems()
-const CATS: SMCat[] = ['ALL', 'BRANDING', 'WEB', 'PHOTO', 'MARKETING']
 
-// ── CSS 애니메이션 주입 ──────────────────────────────────────
 const STYLES = `
 @keyframes sm-scan {
   0%   { transform: translateY(-100%); opacity: 0; }
-  5%   { opacity: 0.7; }
-  90%  { opacity: 0.5; }
+  4%   { opacity: 0.85; }
+  92%  { opacity: 0.6; }
   100% { transform: translateY(900%); opacity: 0; }
 }
 @keyframes sm-coord-blink {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
+  50%       { opacity: 0.2; }
+}
+@keyframes sm-frag-in {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes sm-ghost-pulse {
+  0%, 100% { opacity: 0.025; }
+  50%       { opacity: 0.055; }
 }
 `
 
-function FragmentCard({ item }: {
-  item: PortfolioItem & {
-    smCat: SMCat; span: number
-    lens: { initial: string; reveal: string }
-    coord: string
-  }
+// ─── Fragment Card ───────────────────────────────────────────
+function FragmentCard({
+  item, isWide,
+}: {
+  item: ReturnType<typeof buildItems>[0]
+  isWide: boolean
 }) {
   const [hov, setHov] = useState(false)
   const [scanKey, setScanKey] = useState(0)
@@ -93,88 +104,95 @@ function FragmentCard({ item }: {
     setHov(true)
     setScanKey(k => k + 1)
   }, [])
-  const onLeave = useCallback(() => setHov(false), [])
 
-  const isWide = item.span === 2
-  const paddingTop = isWide ? '44%' : '138%'
+  const blue = (a: number) => `rgba(0,174,239,${a})`
+  const cyan = (a: number) => `rgba(0,214,255,${a})`
 
   return (
-    <div style={{ gridColumn: `span ${item.span}` }}
+    <div
       onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
-    >
-      <div style={{
-        position: 'relative', paddingTop,
-        overflow: 'hidden', background: '#020203',
+      onMouseLeave={() => setHov(false)}
+      style={{
+        position: 'relative',
+        gridColumn: isWide ? 'span 2' : 'span 1',
         cursor: 'crosshair',
+        background: '#020203',
+        overflow: 'hidden',
+      }}
+    >
+      {/* 이미지 — 극단적 크롭으로 "시선"만 노출 */}
+      <div style={{
+        position: 'relative',
+        paddingTop: isWide ? '42%' : '135%',
+        overflow: 'hidden',
+        background: '#0a0a0d',
       }}>
-
-        {/* ── 이미지 — 렌즈 이동 ────────────────────────────
-            핵심: objectPosition이 initial → reveal로 이동
-            이것이 "관점 이동의 순간"
-        ─────────────────────────────────────────────── */}
         <img
           src={item.thumbnail}
-          alt=""
+          alt={item.title}
           style={{
-            position: 'absolute', inset: '-10%',
-            width: '120%', height: '120%',
+            position: 'absolute',
+            inset: '-15%',
+            width: '130%',
+            height: '130%',
             objectFit: 'cover',
             objectPosition: hov ? item.lens.reveal : item.lens.initial,
-            filter: hov
-              ? 'saturate(0.95) brightness(0.58)'
-              : 'saturate(0) brightness(0.28)',
-            transform: hov ? 'scale(1.05)' : 'scale(1)',
-            transition: [
-              'object-position 1.6s cubic-bezier(0.16, 1, 0.3, 1)',
-              'filter 1.0s ease',
-              'transform 1.4s cubic-bezier(0.22, 1, 0.36, 1)',
-            ].join(', '),
+            transition: 'object-position 2.0s cubic-bezier(0.16, 1, 0.3, 1)',
+            // 파편 타입별 필터
+            filter: item.frag === 'TEXTURE'   ? 'saturate(0.4) contrast(1.3)' :
+                    item.frag === 'STRUCTURE'  ? 'saturate(0.2) contrast(1.6) brightness(0.85)' :
+                    item.frag === 'LINE'       ? 'saturate(0) contrast(2.0) brightness(0.7)' :
+                    item.frag === 'CURVE'      ? 'saturate(0.6) contrast(1.2)' :
+                    'saturate(0.35) contrast(1.4)',
+            mixBlendMode: 'luminosity',
           }}
         />
 
-        {/* ── 블루프린트 그리드 ───────────────────────────
-            렌즈 이동 중 구조가 드러난다
-        ─────────────────────────────────────────────── */}
+        {/* ── NEWDIA 구조 유령 — 두 현실이 같은 DNA를 공유한다 ── */}
         <div style={{
           position: 'absolute', inset: 0, pointerEvents: 'none',
-          backgroundImage: [
-            'linear-gradient(rgba(0,174,239,0.12) 1px, transparent 1px)',
-            'linear-gradient(90deg, rgba(0,174,239,0.12) 1px, transparent 1px)',
-          ].join(','),
-          backgroundSize: '44px 44px',
-          mixBlendMode: 'screen',
-          opacity: hov ? 0.15 : 0.5,
-          transition: 'opacity 0.8s ease',
+          backgroundImage: 'linear-gradient(rgba(203,219,42,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(203,219,42,0.03) 1px,transparent 1px)',
+          backgroundSize: '80px 80px',
+          animation: 'sm-ghost-pulse 4s ease-in-out infinite',
+          zIndex: 1,
         }} />
 
-        {/* ── X-Ray 스캔 라인 — 호버 진입 시 1회 스윕 ── */}
+        {/* Blueprint grid */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 2,
+          backgroundImage: 'linear-gradient(rgba(0,174,239,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,0.04) 1px,transparent 1px)',
+          backgroundSize: '44px 44px',
+          opacity: hov ? 0.1 : 0.5,
+          transition: 'opacity 0.4s ease',
+        }} />
+
+        {/* X-Ray 스캔라인 */}
         <div
           key={scanKey}
           style={{
-            position: 'absolute', left: 0, right: 0,
-            height: '3px', top: 0,
-            background: 'linear-gradient(90deg, transparent 0%, rgba(0,174,239,0.9) 20%, rgba(0,214,255,1) 50%, rgba(0,174,239,0.9) 80%, transparent 100%)',
-            boxShadow: '0 0 12px rgba(0,174,239,0.6), 0 0 24px rgba(0,174,239,0.3)',
-            animation: hov ? 'sm-scan 0.9s cubic-bezier(0.4,0,0.2,1) forwards' : 'none',
-            pointerEvents: 'none', zIndex: 5,
+            position: 'absolute', left: 0, right: 0, height: 2, zIndex: 5,
+            background: `linear-gradient(90deg, transparent, ${cyan(0.9)}, transparent)`,
+            boxShadow: `0 0 12px 2px ${cyan(0.4)}`,
+            animation: scanKey ? 'sm-scan 0.85s linear forwards' : 'none',
+            pointerEvents: 'none',
           }}
         />
 
-        {/* ── 프레임 테두리 — 이동 중 빛남 ────────────── */}
+        {/* 프레임 테두리 */}
         <div style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none',
-          border: `1px solid rgba(0,174,239,${hov ? 0.45 : 0.08})`,
-          transition: 'border-color 0.6s ease',
-          zIndex: 3,
+          position: 'absolute', inset: 0, zIndex: 3,
+          border: hov ? `1px solid ${blue(0.5)}` : `1px solid ${blue(0.12)}`,
+          boxShadow: hov ? `inset 0 0 24px ${blue(0.08)}` : 'none',
+          transition: 'all 0.35s ease',
+          pointerEvents: 'none',
         }} />
 
-        {/* ── 코너 브래킷 ──────────────────────────────── */}
+        {/* 코너 브래킷 */}
         {([
-          { t: 10, l: 10, bt: true, bl: true },
-          { t: 10, r: 10, bt: true, br: true },
-          { b: 10, l: 10, bb: true, bl: true },
-          { b: 10, r: 10, bb: true, br: true },
+          { t: 8, l: 8, bt: true, bl: true },
+          { t: 8, r: 8, bt: true, br: true },
+          { b: 8, l: 8, bb: true, bl: true },
+          { b: 8, r: 8, bb: true, br: true },
         ] as const).map((c, i) => (
           <div key={i} style={{
             position: 'absolute',
@@ -182,21 +200,21 @@ function FragmentCard({ item }: {
             left: 'l' in c ? c.l : undefined,
             bottom: 'b' in c ? c.b : undefined,
             right: 'r' in c ? c.r : undefined,
-            width: 16, height: 16, pointerEvents: 'none', zIndex: 4,
-            borderTop:    ('bt' in c && c.bt) ? `1px solid rgba(0,174,239,${hov ? 1 : 0.3})` : 'none',
-            borderLeft:   ('bl' in c && c.bl) ? `1px solid rgba(0,174,239,${hov ? 1 : 0.3})` : 'none',
-            borderBottom: ('bb' in c && c.bb) ? `1px solid rgba(0,174,239,${hov ? 1 : 0.3})` : 'none',
-            borderRight:  ('br' in c && c.br) ? `1px solid rgba(0,174,239,${hov ? 1 : 0.3})` : 'none',
-            transition: 'border-color 0.4s ease',
+            width: 14, height: 14, pointerEvents: 'none', zIndex: 4,
+            borderTop:    ('bt' in c && c.bt) ? `1px solid ${blue(hov ? 1 : 0.3)}` : 'none',
+            borderLeft:   ('bl' in c && c.bl) ? `1px solid ${blue(hov ? 1 : 0.3)}` : 'none',
+            borderBottom: ('bb' in c && c.bb) ? `1px solid ${blue(hov ? 1 : 0.3)}` : 'none',
+            borderRight:  ('br' in c && c.br) ? `1px solid ${blue(hov ? 1 : 0.3)}` : 'none',
+            transition: 'border-color 0.35s ease',
           }} />
         ))}
 
-        {/* ── 좌표 — 관점 이동 중 값이 변한다 ─────────── */}
+        {/* 좌표 — 관점 이동 시 값 변화 */}
         <div style={{
-          position: 'absolute', top: 12, left: 30, zIndex: 6,
-          fontSize: '8px', fontWeight: 700, letterSpacing: '0.2em',
+          position: 'absolute', top: 10, left: 28, zIndex: 6,
+          fontSize: 8, fontWeight: 700, letterSpacing: '0.2em',
           fontFamily: 'monospace',
-          color: hov ? 'rgba(0,214,255,0.95)' : 'rgba(0,174,239,0.35)',
+          color: hov ? cyan(0.95) : blue(0.35),
           animation: hov ? 'sm-coord-blink 0.3s ease 0.4s 2' : 'none',
           transition: 'color 0.3s ease',
           pointerEvents: 'none',
@@ -204,154 +222,156 @@ function FragmentCard({ item }: {
           {coordLabel(item.id, hov)}
         </div>
 
-        {/* ── 카테고리 라벨 ─────────────────────────────── */}
+        {/* 파편 타입 라벨 — 카테고리가 아니라 "무엇을 보는가" */}
         <div style={{
-          position: 'absolute', top: 12, right: 30, zIndex: 6,
-          fontSize: '7px', fontWeight: 700, letterSpacing: '0.24em',
+          position: 'absolute', top: 10, right: 10, zIndex: 6,
+          fontSize: 7, fontWeight: 700, letterSpacing: '0.25em',
           textTransform: 'uppercase',
-          color: `rgba(0,174,239,${hov ? 0.75 : 0.2})`,
-          transition: 'color 0.5s ease',
+          color: hov ? blue(0.8) : blue(0.3),
+          fontFamily: 'monospace',
+          transition: 'color 0.3s ease',
           pointerEvents: 'none',
         }}>
-          {item.smCat}
+          {item.frag}
         </div>
 
-        {/* ── 하단 타이틀 패널 ─────────────────────────── */}
+        {/* 하단 타이틀 패널 */}
         <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 5,
-          padding: isWide ? '56px 24px 22px' : '72px 18px 18px',
-          background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.3) 60%, transparent 100%)',
-          transform: hov ? 'translateY(0)' : 'translateY(100%)',
-          transition: 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)',
+          position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 6,
+          background: `linear-gradient(to top, rgba(2,2,3,0.92) 0%, transparent 100%)`,
+          padding: '32px 14px 12px',
         }}>
-          {/* 관점 이동 표시 선 */}
           <div style={{
-            display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px',
+            opacity: hov ? 1 : 0,
+            transform: hov ? 'translateY(0)' : 'translateY(10px)',
+            transition: 'opacity 0.3s ease, transform 0.4s cubic-bezier(0.22,1,0.36,1)',
           }}>
-            <div style={{
-              width: hov ? '28px' : '0px', height: '1px',
-              background: '#00AEEF',
-              transition: 'width 0.5s cubic-bezier(0.22,1,0.36,1) 0.1s',
-            }} />
-            <span style={{
-              fontSize: '7px', fontWeight: 700, letterSpacing: '0.2em',
-              textTransform: 'uppercase', color: 'rgba(0,174,239,0.65)',
-              opacity: hov ? 1 : 0, transition: 'opacity 0.4s ease 0.2s',
+            <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: cyan(0.7), marginBottom: 4 }}>
+              {item.client}
+            </p>
+            <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', letterSpacing: '-0.01em', marginBottom: 4 }}>
+              {item.title}
+            </p>
+            <p style={{
+              fontSize: 7, fontWeight: 700, letterSpacing: '0.3em',
+              textTransform: 'uppercase', color: blue(0.5),
+              animation: hov ? 'sm-frag-in 0.3s ease 0.2s both' : 'none',
             }}>
-              PERSPECTIVE SHIFTED
-            </span>
+              // PERSPECTIVE SHIFTED
+            </p>
           </div>
-          <p style={{
-            fontSize: '8px', fontWeight: 600, letterSpacing: '0.16em',
-            textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)',
-            marginBottom: 6,
-          }}>
-            {item.client} · {item.year}
-          </p>
-          <p style={{
-            fontSize: isWide ? '18px' : '14px',
-            fontWeight: 700, letterSpacing: '-0.01em', lineHeight: 1.2,
-            color: '#fff',
-          }}>
-            {item.title}
-          </p>
         </div>
 
-        {/* ── 하단 글로우 라인 ─────────────────────────── */}
+        {/* 하단 Electric Blue 라인 */}
         <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0,
-          height: '2px', zIndex: 4,
-          background: 'linear-gradient(90deg, transparent, #00AEEF 30%, rgba(0,214,255,0.9) 50%, #00AEEF 70%, transparent)',
-          opacity: hov ? 1 : 0,
-          transition: 'opacity 0.5s ease 0.1s',
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: 1, zIndex: 7,
+          background: `linear-gradient(90deg, transparent, ${blue(hov ? 0.8 : 0.2)}, transparent)`,
+          transition: 'background 0.4s ease',
+          pointerEvents: 'none',
         }} />
-
       </div>
     </div>
   )
 }
 
+// ─── SM Category Bar ─────────────────────────────────────────
+const SM_CATS: { key: SMCat; label: string }[] = [
+  { key: 'ALL',       label: 'ALL' },
+  { key: 'BRANDING',  label: 'BRAND' },
+  { key: 'WEB',       label: 'WEB' },
+  { key: 'PHOTO',     label: 'PHOTO' },
+  { key: 'MARKETING', label: 'MKTG' },
+]
+
+// ─── Main ────────────────────────────────────────────────────
 export default function Portfolio() {
-  const [activeCat, setActiveCat] = useState<SMCat>('ALL')
-  const [opacity, setOpacity] = useState(1)
-
-  const switchCat = useCallback((cat: SMCat) => {
-    if (cat === activeCat) return
-    setOpacity(0)
-    setTimeout(() => { setActiveCat(cat); setOpacity(1) }, 220)
-  }, [activeCat])
-
-  const visible = activeCat === 'ALL'
-    ? ALL_ITEMS
-    : ALL_ITEMS.filter(i => i.smCat === activeCat)
+  const [filter, setFilter] = useState<SMCat>('ALL')
+  const items = filter === 'ALL' ? ALL_ITEMS : ALL_ITEMS.filter(x => x.smCat === filter)
 
   return (
-    <section id="portfolio" style={{ padding: 'clamp(80px,10vw,140px) var(--pad)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+    <section id="portfolio" style={{ position: 'relative', padding: '80px 0', background: '#020203' }}>
       <style>{STYLES}</style>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
-        {/* 헤더 */}
-        <div style={{ marginBottom: '56px' }}>
-          <p style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.2)', marginBottom: '24px' }}>
-            05 / PORTFOLIO — ONE SOURCE · MULTIPLE REALITIES
-          </p>
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px' }}>
+      {/* ── NEWDIA 구조 유령 — 섹션 배경 ── */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        backgroundImage: 'linear-gradient(rgba(203,219,42,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(203,219,42,0.015) 1px,transparent 1px)',
+        backgroundSize: '80px 80px',
+      }} />
+
+      {/* 구조 유령 측정 노트 — NEWDIA DNA 흔적 */}
+      {[
+        { x: '8%',  y: '12%', text: '// 1200px' },
+        { x: '72%', y: '38%', text: '—  80px'   },
+        { x: '35%', y: '62%', text: 'ND.003'     },
+        { x: '88%', y: '78%', text: 'rev.004'    },
+      ].map((m, i) => (
+        <div key={i} style={{
+          position: 'absolute', left: m.x, top: m.y, pointerEvents: 'none',
+          fontSize: 8, fontFamily: 'monospace',
+          color: 'rgba(203,219,42,0.05)',
+          letterSpacing: '0.12em',
+        }}>
+          {m.text}
+        </div>
+      ))}
+
+      <div style={{ padding: '0 var(--pad)', position: 'relative', zIndex: 1 }}>
+
+        {/* ── 헤더 ── */}
+        <div style={{ marginBottom: 40 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 28 }}>
             <div>
-              <h2 style={{ fontSize: 'clamp(32px,4.5vw,64px)', fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.0, marginBottom: '12px' }}>
-                Same Work.<br />
-                <span style={{ color: 'rgba(255,255,255,0.25)', fontStyle: 'italic', fontWeight: 300 }}>
-                  Different Reality.
-                </span>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.32em', textTransform: 'uppercase', color: 'rgba(0,174,239,0.5)', marginBottom: 10 }}>
+                REALITY FRAGMENT ARCHIVE
+              </p>
+              <h2 style={{
+                fontSize: 'clamp(40px, 6vw, 72px)',
+                fontWeight: 700,
+                letterSpacing: '-0.04em',
+                lineHeight: 0.92,
+                color: '#fff',
+              }}>
+                Fragments.
               </h2>
-              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.22)', letterSpacing: '0.08em', lineHeight: 1.7 }}>
-                각 카드 위에 커서를 올려보세요.<br />
-                <span style={{ color: 'rgba(0,174,239,0.5)' }}>렌즈가 이동하며 다른 현실이 드러납니다.</span>
-              </p>
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)', fontStyle: 'italic', marginBottom: 10 }}>
-                {visible.length} fragments
-              </p>
-              <a
-                href="http://localhost:3000#portfolio"
+            <p style={{ fontSize: 10, fontFamily: 'monospace', color: 'rgba(0,174,239,0.35)', letterSpacing: '0.1em' }}>
+              {items.length} FRAGMENTS
+            </p>
+          </div>
+
+          {/* 카테고리 필터 */}
+          <div style={{ display: 'flex', gap: 2, borderTop: '1px solid rgba(0,174,239,0.08)', paddingTop: 16 }}>
+            {SM_CATS.map(c => (
+              <button
+                key={c.key}
+                onClick={() => setFilter(c.key)}
                 style={{
-                  fontSize: '9px', fontWeight: 700, letterSpacing: '0.2em',
-                  textTransform: 'uppercase', color: 'rgba(203,219,42,0.45)',
-                  transition: 'color 0.2s', textDecoration: 'none',
-                  display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end',
+                  padding: '7px 16px',
+                  fontSize: 9, fontWeight: 700,
+                  letterSpacing: '0.22em', textTransform: 'uppercase',
+                  fontFamily: 'monospace',
+                  background: filter === c.key ? 'rgba(0,174,239,0.12)' : 'transparent',
+                  color: filter === c.key ? '#00AEEF' : 'rgba(255,255,255,0.3)',
+                  border: filter === c.key ? '1px solid rgba(0,174,239,0.3)' : '1px solid transparent',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#cbdb2a')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(203,219,42,0.45)')}
               >
-                ← 구조로 돌아가기 (NEWDIA)
-              </a>
-            </div>
+                {c.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* 카테고리 */}
-        <div style={{ display: 'flex', marginBottom: '48px', borderBottom: '1px solid rgba(255,255,255,0.06)', overflowX: 'auto', scrollbarWidth: 'none' }}>
-          {CATS.map(cat => (
-            <button key={cat} onClick={() => switchCat(cat)} style={{
-              padding: '14px 24px', background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: '8px', fontWeight: 700, letterSpacing: '0.26em', textTransform: 'uppercase',
-              color: activeCat === cat ? '#00AEEF' : 'rgba(255,255,255,0.2)',
-              borderBottom: `2px solid ${activeCat === cat ? '#00AEEF' : 'transparent'}`,
-              marginBottom: '-1px', transition: 'color 0.3s, border-color 0.3s',
-              whiteSpace: 'nowrap', fontFamily: 'inherit',
-            }}>
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* 파편 그리드 */}
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '3px', opacity, transition: 'opacity 0.22s ease',
-        }}>
-          {visible.map(item => (
-            <FragmentCard key={`${activeCat}-${item.id}`} item={item} />
+        {/* ── Grid — 비대칭 구조 ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 2 }}>
+          {items.map(item => (
+            <FragmentCard
+              key={item.id}
+              item={item}
+              isWide={item.span === 2}
+            />
           ))}
         </div>
 

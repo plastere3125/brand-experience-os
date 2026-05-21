@@ -1,37 +1,57 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 
 const NODES = [
-  { x: '74%', y: '20%', delay: 0.8 },
-  { x: '74%', y: '60%', delay: 1.0 },
-  { x: '90%', y: '20%', delay: 1.1 },
-  { x: '90%', y: '60%', delay: 1.2 },
+  { x: '74%', y: '20%', delay: 0.9 },
+  { x: '74%', y: '60%', delay: 1.1 },
+  { x: '90%', y: '20%', delay: 1.2 },
+  { x: '90%', y: '60%', delay: 1.3 },
 ]
 
-const HEADLINE = ['Reality', 'is', 'Constructed.']
+const METADATA = [
+  { label: 'PROJECT', value: 'ND.2026.001' },
+  { label: 'SCOPE',   value: 'FULL SYSTEM' },
+  { label: 'REV',     value: 'v.004' },
+  { label: 'STATUS',  value: 'ACTIVE' },
+]
 
 export default function Hero() {
+  const [fromMonster, setFromMonster] = useState(false)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.search.includes('from=monster')) {
+      setFromMonster(true)
+      // URL에서 param 제거 (히스토리 오염 방지)
+      window.history.replaceState({}, '', window.location.pathname)
+      setTimeout(() => setFromMonster(false), 3000)
+    }
+  }, [])
+
   const scrollToPortfolio = () => {
     const el = document.querySelector('#portfolio')
     if (el) el.scrollIntoView({ behavior: 'smooth' })
   }
 
   return (
-    <section
-      id="hero"
-      style={{
-        position: 'relative', height: '100vh', minHeight: 700,
-        display: 'flex', alignItems: 'center',
-        overflow: 'hidden', background: 'var(--white)',
-      }}
-    >
+    <section id="hero" style={{
+      position: 'relative', height: '100vh', minHeight: 720,
+      display: 'flex', alignItems: 'center',
+      overflow: 'hidden', background: 'var(--white)',
+    }}>
+      {/* Perspective Echo — SM에서 넘어올 때 잔상 */}
+      {fromMonster && <>
+        <div className="nd-perspective-echo" />
+        <div className="nd-echo-line" />
+      </>}
+
       {/* 설계도 그리드 */}
       <div style={{
         position: 'absolute', inset: 0,
         backgroundImage: 'linear-gradient(var(--gray-200) 1px, transparent 1px), linear-gradient(90deg, var(--gray-200) 1px, transparent 1px)',
         backgroundSize: '80px 80px',
-        opacity: 0.5,
+        opacity: 0.45,
       }} />
 
       {/* 수직 측정선 */}
@@ -39,24 +59,22 @@ export default function Hero() {
         initial={{ scaleY: 0, transformOrigin: 'top' }}
         animate={{ scaleY: 1 }}
         transition={{ duration: 1.4, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        style={{ position: 'absolute', top: 0, right: 80, width: 1, height: '60%', background: 'var(--lime)' }}
+        style={{ position: 'absolute', top: 0, right: 80, width: 1, height: '62%', background: 'var(--lime)' }}
       />
-
-      {/* 수평 측정선 — 수직선 하단에서 연장 */}
       <motion.div
         initial={{ scaleX: 0, transformOrigin: 'right' }}
         animate={{ scaleX: 1 }}
-        transition={{ duration: 0.8, delay: 1.0, ease: [0.22, 1, 0.36, 1] }}
-        style={{ position: 'absolute', top: '60%', right: 0, width: 'calc(16% + 1px)', height: 1, background: 'var(--lime)' }}
+        transition={{ duration: 0.8, delay: 1.1, ease: [0.22, 1, 0.36, 1] }}
+        style={{ position: 'absolute', top: '62%', right: 0, width: 'calc(16% + 1px)', height: 1, background: 'var(--lime)' }}
       />
 
-      {/* 구조 측정 노드 */}
+      {/* 측정 노드 */}
       {NODES.map((n, i) => (
         <motion.div
           key={i}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.25, delay: n.delay }}
+          transition={{ duration: 0.2, delay: n.delay }}
           style={{
             position: 'absolute', left: n.x, top: n.y,
             width: 5, height: 5, background: 'var(--lime)',
@@ -65,119 +83,132 @@ export default function Hero() {
         />
       ))}
 
-      {/* 측정 박스 — 오른쪽 영역 */}
+      {/* 측정 박스 */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.3, duration: 0.5 }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        transition={{ delay: 1.4, duration: 0.4 }}
         style={{
           position: 'absolute', top: '20%', right: '6%',
-          width: '16%', height: '40%',
+          width: '16%', height: '42%',
           border: '1px solid var(--gray-200)',
           pointerEvents: 'none',
         }}
       />
 
       <div className="nd-container" style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{ maxWidth: 720 }}>
+        <div style={{ maxWidth: 760 }}>
 
           <motion.span
             className="nd-label"
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            style={{ marginBottom: 24 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
+            style={{ marginBottom: 28 }}
           >
             Structure Engine
           </motion.span>
 
-          {/* 헤드라인 — 단어마다 순차 등장 (구축되듯이) */}
-          <div style={{ marginBottom: 12 }}>
+          {/* 헤드라인 — 단어마다 구축되듯 등장 */}
+          <div style={{ marginBottom: 14 }}>
             <h1 style={{
-              fontSize: 'clamp(48px, 7vw, 88px)',
-              fontWeight: 600, letterSpacing: '-0.04em', lineHeight: 1.0,
+              fontSize: 'clamp(56px, 8.5vw, 112px)',
+              fontWeight: 700,
+              letterSpacing: '-0.055em',
+              lineHeight: 0.92,
               color: 'var(--black)',
             }}>
-              {HEADLINE.map((word, i) => (
+              {['Reality', 'is'].map((word, i) => (
                 <motion.span
                   key={word}
-                  initial={{ opacity: 0, y: 28 }}
+                  initial={{ opacity: 0, y: 32 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.65, delay: 0.5 + i * 0.13, ease: [0.22, 1, 0.36, 1] }}
-                  style={{
-                    display: 'inline-block',
-                    marginRight: '0.25em',
-                    color: word === 'Constructed.' ? 'var(--lime)' : 'var(--black)',
-                  }}
+                  style={{ display: 'inline-block', marginRight: '0.22em' }}
                 >
                   {word}
                 </motion.span>
               ))}
+              <motion.span
+                initial={{ opacity: 0, y: 32 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.65, delay: 0.76, ease: [0.22, 1, 0.36, 1] }}
+                style={{ display: 'inline-block', color: 'var(--lime)' }}
+              >
+                Constructed.
+              </motion.span>
             </h1>
           </div>
 
-          {/* 서브 — 구조 단어들 */}
+          {/* 서브 — 아키텍처 어휘 */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.95 }}
+            transition={{ duration: 0.5, delay: 1.0 }}
             style={{
-              fontSize: 'clamp(20px, 2.5vw, 30px)',
-              fontWeight: 400, letterSpacing: '0.06em',
-              color: 'var(--gray-400)', marginBottom: 36,
+              fontSize: 'clamp(18px, 2.2vw, 26px)',
+              fontWeight: 400,
+              letterSpacing: '0.08em',
               textTransform: 'uppercase',
+              color: 'var(--gray-400)',
+              marginBottom: 40,
             }}
           >
             Structure — Frame — Build
           </motion.p>
 
           <motion.p
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.05 }}
-            style={{ fontSize: 17, lineHeight: 1.75, color: 'var(--gray-600)', marginBottom: 48, maxWidth: 460 }}
+            transition={{ duration: 0.5, delay: 1.1 }}
+            style={{ fontSize: 16, lineHeight: 1.75, color: 'var(--gray-600)', marginBottom: 48, maxWidth: 440 }}
           >
             브랜드 구조를 설계하고,<br />
             새로운 아이덴티티를 현실로 구축합니다.
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.15 }}
-            style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}
+            transition={{ duration: 0.5, delay: 1.2 }}
+            style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}
           >
             <button className="nd-btn-primary" onClick={scrollToPortfolio}>
-              Explore Work <span style={{ fontSize: 18 }}>→</span>
+              Explore Work →
             </button>
-            <a href="/consultation" className="nd-btn-outline">무료 상담 신청</a>
+            <a href="/consultation" className="nd-btn-outline">무료 상담</a>
           </motion.div>
 
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1.0, delay: 1.5 }}
-            style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--gray-400)', marginTop: 28 }}
+            transition={{ duration: 1.0, delay: 1.6 }}
+            style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--gray-400)', marginTop: 28 }}
           >
             NEW<span style={{ color: 'var(--lime)' }}>DIA</span> — A NEW ID
           </motion.p>
         </div>
 
-        {/* Stats */}
+        {/* 프로젝트 메타데이터 패널 — 아키텍처 도면 스타일 */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 1.3 }}
-          style={{ position: 'absolute', bottom: -120, right: 0, display: 'flex', gap: 48 }}
+          transition={{ duration: 0.6, delay: 1.8 }}
+          style={{
+            position: 'absolute',
+            bottom: -100,
+            right: 0,
+            borderLeft: '1px solid var(--gray-200)',
+            paddingLeft: 20,
+          }}
         >
-          {[
-            { num: '10+', label: 'Years' },
-            { num: '200+', label: 'Projects' },
-            { num: '50+', label: 'Clients' },
-          ].map(stat => (
-            <div key={stat.label} style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--black)' }}>{stat.num}</div>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--gray-400)' }}>{stat.label}</div>
+          {METADATA.map(m => (
+            <div key={m.label} style={{ marginBottom: 10 }}>
+              <p style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gray-400)', marginBottom: 2 }}>
+                {m.label}
+              </p>
+              <p style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--black)', letterSpacing: '0.06em' }}>
+                {m.value}
+              </p>
             </div>
           ))}
         </motion.div>
@@ -185,16 +216,15 @@ export default function Hero() {
 
       {/* Scroll indicator */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.6 }}
-        style={{ position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        transition={{ delay: 1.7 }}
+        style={{ position: 'absolute', bottom: 36, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}
       >
-        <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gray-400)' }}>Scroll</span>
+        <span className="nd-code">Scroll</span>
         <motion.div
           animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5 }}
-          style={{ width: 1, height: 32, background: 'var(--gray-400)' }}
+          transition={{ repeat: Infinity, duration: 1.6 }}
+          style={{ width: 1, height: 28, background: 'var(--gray-400)' }}
         />
       </motion.div>
     </section>

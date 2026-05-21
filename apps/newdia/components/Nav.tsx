@@ -37,7 +37,7 @@ export default function Nav() {
 
   const shiftPerspective = () => {
     setTransitioning(true)
-    setTimeout(() => { window.location.href = 'http://localhost:3001' }, 700)
+    setTimeout(() => { window.location.href = 'http://localhost:3001?from=newdia' }, 700)
   }
 
   return (

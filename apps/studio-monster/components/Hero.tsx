@@ -1,8 +1,26 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import MLogo from './MLogo'
 
+const ECHO_STYLES = `
+@keyframes sm-echo-fade { 0% { opacity:0.2; } 100% { opacity:0; } }
+.sm-structure-echo {
+  position:fixed; inset:0; pointer-events:none; z-index:8000;
+  background: linear-gradient(rgba(255,255,255,0.06) 1px,transparent 1px),
+              linear-gradient(90deg,rgba(255,255,255,0.06) 1px,transparent 1px);
+  background-size:80px 80px;
+  animation: sm-echo-fade 2.5s ease-out forwards;
+}
+.sm-echo-vline {
+  position:fixed; top:0; right:15%; width:1px; height:100vh;
+  background:rgba(203,219,42,0.15);
+  pointer-events:none; z-index:8000;
+  animation: sm-echo-fade 3s ease-out forwards;
+}
+`
+
 export default function Hero() {
+  const [fromNewdia, setFromNewdia] = useState(false)
   const symRef = useRef<HTMLDivElement>(null)
   const shadowRef = useRef<HTMLDivElement>(null)
   const wireRef = useRef<HTMLDivElement>(null)
@@ -11,6 +29,14 @@ export default function Hero() {
   const copyRef = useRef<HTMLDivElement>(null)
   const catsRef = useRef<HTMLDivElement>(null)
   const catsKoRef = useRef<HTMLParagraphElement>(null)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.search.includes('from=newdia')) {
+      setFromNewdia(true)
+      window.history.replaceState({}, '', window.location.pathname)
+      setTimeout(() => setFromNewdia(false), 3500)
+    }
+  }, [])
 
   useEffect(() => {
     let isReady = false, lastMove = 0, ambT = 0
@@ -97,6 +123,36 @@ export default function Hero() {
       position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '0 var(--pad)',
     }}>
+      <style>{ECHO_STYLES}</style>
+      {/* Transition Echo — NEWDIA에서 넘어올 때 구조 잔상 */}
+      {fromNewdia && <>
+        <div className="sm-structure-echo" />
+        <div className="sm-echo-vline" />
+      </>}
+
+      {/* NEWDIA 구조 유령 — 같은 현실의 다른 상태 */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
+        backgroundImage: 'linear-gradient(rgba(203,219,42,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(203,219,42,0.018) 1px,transparent 1px)',
+        backgroundSize: '80px 80px',
+      }} />
+      {/* 구조 유령 측정선 — NEWDIA DNA */}
+      <div style={{ position:'absolute', top:0, right:'15%', width:1, height:'100%', background:'rgba(203,219,42,0.04)', pointerEvents:'none', zIndex:0 }} />
+      {[
+        { x:'14%', y:'18%', text:'// 1200' },
+        { x:'78%', y:'72%', text:'—  80px' },
+        { x:'42%', y:'88%', text:'ND.001'  },
+      ].map((m,i) => (
+        <div key={i} style={{
+          position:'absolute', left:m.x, top:m.y, pointerEvents:'none', zIndex:0,
+          fontSize:8, fontFamily:'monospace',
+          color:'rgba(203,219,42,0.04)',
+          letterSpacing:'0.12em',
+        }}>
+          {m.text}
+        </div>
+      ))}
+
       {/* Blueprint grid */}
       <div ref={gridRef} style={{
         position: 'absolute', inset: 0, opacity: 0, pointerEvents: 'none', zIndex: 0,

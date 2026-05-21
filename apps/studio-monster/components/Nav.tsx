@@ -55,7 +55,7 @@ export default function Nav() {
 
   const returnToStructure = () => {
     setTransitioning(true)
-    setTimeout(() => { window.location.href = 'http://localhost:3000' }, 700)
+    setTimeout(() => { window.location.href = 'http://localhost:3000?from=monster' }, 700)
   }
 
   return (
