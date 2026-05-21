@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "buildCommand": "cd ../.. && pnpm install && cd apps/studio-monster && pnpm build",
-  "outputDirectory": ".next",
-  "installCommand": "echo skip"
+  "installCommand": "cd ../.. && pnpm install",
+  "buildCommand": "pnpm build",
+  "outputDirectory": ".next"
 }
