@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  --color-mb: #00AEEF;
+  --color-cib: #006eb7;
+  --color-cic: #5bcbf5;
+  --font-sans: var(--font-sans), system-ui, sans-serif;
+}
+
+:root {
+  --mb: #00AEEF;
+  --cib: #006eb7;
+  --cic: #5bcbf5;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --pad: 52px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: #000;
+  color: #fff;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  cursor: none;
+  overflow-x: hidden;
+}
+
+::selection { background: rgba(0,174,239,.22); }
+
+.cr {
+  position: fixed;
+  width: 6px; height: 6px;
+  background: #00AEEF;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%) rotate(45deg);
+  transition: width .2s, height .2s;
+}
+
+.crr {
+  position: fixed;
+  width: 24px; height: 24px;
+  border: 1px solid rgba(0,174,239,.5);
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%) rotate(45deg);
+  transition: width .25s, height .25s, border-color .25s;
+}
+
+body.ch .cr { width: 12px; height: 12px; }
+body.ch .crr { width: 64px; height: 64px; border-color: rgba(0,174,239,.28); }
+
+/* ── Mobile resets ── */
+@media (hover: none), (pointer: coarse) {
+  body { cursor: auto; }
+  .cr, .crr { display: none !important; }
+}
+
+@keyframes nd-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.65); }
+}
+
+@keyframes nd-ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes nd-scan {
+  0%   { top: -80px; opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
