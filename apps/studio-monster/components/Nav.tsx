@@ -55,7 +55,8 @@ export default function Nav() {
 
   const returnToStructure = () => {
     setTransitioning(true)
-    setTimeout(() => { window.location.href = 'http://localhost:3000?from=monster' }, 700)
+    const dest = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://beos-newdia.vercel.app'
+    setTimeout(() => { window.location.href = `${dest}?from=monster` }, 700)
   }
 
   return (

@@ -37,7 +37,8 @@ export default function Nav() {
 
   const shiftPerspective = () => {
     setTransitioning(true)
-    setTimeout(() => { window.location.href = 'http://localhost:3001?from=newdia' }, 700)
+    const dest = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://beos-studio-monster.vercel.app'
+    setTimeout(() => { window.location.href = `${dest}?from=newdia` }, 700)
   }
 
   return (
