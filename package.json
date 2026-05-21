@@ -1,0 +1,17 @@
+{
+  "name": "brand-experience-os",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:newdia": "turbo dev --filter=@beos/newdia",
+    "dev:monster": "turbo dev --filter=@beos/studio-monster",
+    "build": "turbo build",
+    "build:newdia": "turbo build --filter=@beos/newdia",
+    "build:monster": "turbo build --filter=@beos/studio-monster"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5"
+  },
+  "packageManager": "pnpm@9.15.9"
+}
