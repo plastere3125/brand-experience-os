@@ -1,167 +1,126 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+
+import { useState, useCallback } from 'react'
 import { siteData, type PortfolioCategory, type PortfolioItem } from '@beos/core/portfolio'
 
-function useIsMobile() {
-  const [mobile, setMobile] = useState(false)
-  const check = useCallback(() => setMobile(window.innerWidth < 768), [])
-  useEffect(() => { check(); window.addEventListener('resize', check); return () => window.removeEventListener('resize', check) }, [check])
-  return mobile
-}
-
-type SMCat = 'ALL' | 'BRANDING' | 'WEB DESIGN' | 'PHOTOGRAPHY' | 'MARKETING'
-const CATS: SMCat[] = ['ALL', 'BRANDING', 'WEB DESIGN', 'PHOTOGRAPHY', 'MARKETING']
+type SMCat = 'ALL' | 'BRANDING' | 'WEB' | 'PHOTO' | 'MARKETING'
 
 const CAT_MAP: Record<PortfolioCategory, SMCat> = {
   visual: 'BRANDING',
-  web: 'WEB DESIGN',
-  photo: 'PHOTOGRAPHY',
+  web: 'WEB',
+  photo: 'PHOTO',
   marketing: 'MARKETING',
 }
 
-const GRID_SIZE: Record<string, string> = {
-  BRANDING: '36px 36px',
-  'WEB DESIGN': '48px 48px',
-  PHOTOGRAPHY: '64px 64px',
-  MARKETING: '52px 22px',
+const CROP_POSITIONS = [
+  '18% 22%', '82% 18%', '15% 78%', '78% 72%',
+  '52% 28%', '48% 68%', '25% 45%', '72% 50%',
+]
+
+const SPAN_PATTERN = [2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1]
+
+function coordLabel(index: number): string {
+  const x = String(((index * 17 + 8) % 96) + 4).padStart(3, '0')
+  const y = String(((index * 23 + 5) % 92) + 4).padStart(3, '0')
+  return `${x}.${y}`
 }
 
-// NEWDIA 데이터를 Studio MONSTER 카테고리로 플랫화
 function buildItems() {
-  const result: (PortfolioItem & { smCat: SMCat })[] = []
+  const result: (PortfolioItem & { smCat: SMCat; cropPos: string; span: number; coord: string })[] = []
+  let i = 0
   for (const [key, items] of Object.entries(siteData.gallery)) {
-    const cat = CAT_MAP[key as PortfolioCategory]
     for (const item of items) {
-      result.push({ ...item, smCat: cat })
+      result.push({
+        ...item,
+        smCat: CAT_MAP[key as PortfolioCategory],
+        cropPos: CROP_POSITIONS[i % CROP_POSITIONS.length],
+        span: SPAN_PATTERN[i % SPAN_PATTERN.length],
+        coord: coordLabel(i),
+      })
+      i++
     }
   }
   return result
 }
 
 const ALL_ITEMS = buildItems()
+const CATS: SMCat[] = ['ALL', 'BRANDING', 'WEB', 'PHOTO', 'MARKETING']
 
-function PortfolioCard({ item }: { item: PortfolioItem & { smCat: SMCat } }) {
+function FragmentCard({ item }: {
+  item: PortfolioItem & { smCat: SMCat; cropPos: string; span: number; coord: string }
+}) {
   const [hov, setHov] = useState(false)
+  const isWide = item.span === 2
+  const paddingTop = isWide ? '46%' : '120%'
 
   return (
-    <div
+    <div style={{ gridColumn: `span ${item.span}` }}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
-      style={{
-        background: '#060606',
-        border: `1px solid rgba(255,255,255,${hov ? 0.12 : 0.06})`,
-        overflow: 'hidden',
-        transform: hov ? 'translateY(-5px)' : 'none',
-        transition: 'border-color 0.4s ease, transform 0.55s cubic-bezier(0.22,1,0.36,1)',
-        cursor: 'none',
-      }}
     >
-      {/* Image area */}
-      <div style={{ position: 'relative', paddingTop: '75%', overflow: 'hidden', background: '#080808' }}>
+      <div style={{ position: 'relative', paddingTop, overflow: 'hidden', background: '#030304', cursor: 'crosshair' }}>
 
-        {/* 실제 NEWDIA 이미지 */}
+        {/* Extreme Crop Image */}
         <img
           src={item.thumbnail}
-          alt={item.title}
+          alt=""
           style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
+            position: 'absolute', inset: '-8%',
+            width: '116%', height: '116%',
             objectFit: 'cover',
-            objectPosition: 'center',
-            // Extreme Crop: 호버 시 확대
-            transform: hov ? 'scale(1.12)' : 'scale(1)',
-            // 재번역: 일반=desaturate, 호버=컬러
-            filter: hov
-              ? 'saturate(1) brightness(0.75)'
-              : 'saturate(0.15) brightness(0.5)',
-            transition: 'transform 0.8s cubic-bezier(0.22,1,0.36,1), filter 0.6s ease',
+            objectPosition: item.cropPos,
+            filter: hov ? 'saturate(1.1) brightness(0.62)' : 'saturate(0) brightness(0.35)',
+            transform: hov ? 'scale(1.07)' : 'scale(1)',
+            transition: 'filter 0.9s ease, transform 1.1s cubic-bezier(0.22,1,0.36,1)',
           }}
         />
 
-        {/* Blueprint Grid Overlay — 재번역 레이어 */}
+        {/* Blueprint Grid */}
         <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: [
-            'linear-gradient(rgba(0,174,239,0.12) 1px, transparent 1px)',
-            'linear-gradient(90deg, rgba(0,174,239,0.12) 1px, transparent 1px)',
-          ].join(','),
-          backgroundSize: GRID_SIZE[item.smCat] || '44px 44px',
-          opacity: hov ? 0.3 : 0.7,
-          transition: 'opacity 0.6s ease',
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          backgroundImage: ['linear-gradient(rgba(0,174,239,0.1) 1px, transparent 1px)', 'linear-gradient(90deg, rgba(0,174,239,0.1) 1px, transparent 1px)'].join(','),
+          backgroundSize: '44px 44px',
+          opacity: hov ? 0.18 : 0.52,
           mixBlendMode: 'screen',
+          transition: 'opacity 0.7s ease',
         }} />
 
-        {/* 코너 브래킷 TL */}
-        <div style={{ position: 'absolute', top: 12, left: 12, width: 12, height: 12, borderTop: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.4})`, borderLeft: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.4})`, transition: 'border-color 0.4s ease', zIndex: 3 }} />
-        {/* TR */}
-        <div style={{ position: 'absolute', top: 12, right: 12, width: 12, height: 12, borderTop: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.4})`, borderRight: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.4})`, transition: 'border-color 0.4s ease', zIndex: 3 }} />
-        {/* BL */}
-        <div style={{ position: 'absolute', bottom: 12, left: 12, width: 12, height: 12, borderBottom: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.4})`, borderLeft: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.4})`, transition: 'border-color 0.4s ease', zIndex: 3 }} />
-        {/* BR */}
-        <div style={{ position: 'absolute', bottom: 12, right: 12, width: 12, height: 12, borderBottom: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.4})`, borderRight: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.4})`, transition: 'border-color 0.4s ease', zIndex: 3 }} />
+        {/* Corner Brackets */}
+        <div style={{ position: 'absolute', top: 12, left: 12, width: 14, height: 14, borderTop: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.32})`, borderLeft: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.32})`, transition: 'border-color 0.4s', zIndex: 3, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: 12, right: 12, width: 14, height: 14, borderTop: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.32})`, borderRight: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.32})`, transition: 'border-color 0.4s', zIndex: 3, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: 12, left: 12, width: 14, height: 14, borderBottom: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.32})`, borderLeft: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.32})`, transition: 'border-color 0.4s', zIndex: 3, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: 12, right: 12, width: 14, height: 14, borderBottom: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.32})`, borderRight: `1px solid rgba(0,174,239,${hov ? 0.9 : 0.32})`, transition: 'border-color 0.4s', zIndex: 3, pointerEvents: 'none' }} />
 
-        {/* Perspective reframe label */}
-        <div style={{
-          position: 'absolute', top: 10, right: 32,
-          fontSize: '8px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase',
-          color: `rgba(0,174,239,${hov ? 0.9 : 0.2})`,
-          transition: 'color 0.4s', zIndex: 3,
-        }}>
-          REFRAMED
+        {/* Coordinate label */}
+        <div style={{ position: 'absolute', top: 14, left: 30, zIndex: 4, pointerEvents: 'none', fontSize: '8px', fontWeight: 700, letterSpacing: '0.18em', fontFamily: 'monospace', color: `rgba(0,174,239,${hov ? 0.9 : 0.38})`, transition: 'color 0.4s' }}>
+          {item.coord}
         </div>
 
-        {/* 호버 시 하단 블루 선 */}
-        <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px',
-          background: 'linear-gradient(90deg, transparent, #00AEEF, transparent)',
-          opacity: hov ? 1 : 0, transition: 'opacity 0.4s ease', zIndex: 3,
-        }} />
-
-        {/* Client tag */}
-        {item.client && (
-          <div style={{
-            position: 'absolute', bottom: 12, left: 16, zIndex: 3,
-            fontSize: '9px', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase',
-            color: `rgba(255,255,255,${hov ? 0.7 : 0.25})`,
-            transition: 'color 0.4s',
-          }}>
-            {item.client}
-          </div>
-        )}
-      </div>
-
-      {/* Info */}
-      <div style={{ padding: '20px 22px 24px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '11px' }}>
-          <span style={{
-            fontSize: '10px', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase',
-            color: `rgba(0,174,239,${hov ? 1 : 0.5})`, transition: 'color 0.35s ease',
-          }}>
-            {item.smCat}
-          </span>
-          <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.22)', letterSpacing: '0.06em' }}>
-            {item.year}
-          </span>
+        {/* Category label */}
+        <div style={{ position: 'absolute', top: 14, right: 30, zIndex: 4, pointerEvents: 'none', fontSize: '7px', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: `rgba(0,174,239,${hov ? 0.8 : 0.22})`, transition: 'color 0.4s' }}>
+          {item.smCat}
         </div>
 
-        <h3 style={{
-          fontSize: '16px', fontWeight: 700, letterSpacing: '-0.01em', lineHeight: 1.3,
-          color: hov ? '#fff' : 'rgba(255,255,255,0.82)',
-          marginBottom: '7px', transition: 'color 0.3s ease',
+        {/* Title panel — slides up on hover */}
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 5,
+          padding: '48px 20px 20px',
+          background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%)',
+          transform: hov ? 'translateY(0)' : 'translateY(100%)',
+          transition: 'transform 0.5s cubic-bezier(0.22,1,0.36,1)',
         }}>
-          {item.title}
-        </h3>
+          <div style={{ width: hov ? '32px' : '0px', height: '1px', background: '#00AEEF', marginBottom: '10px', transition: 'width 0.55s cubic-bezier(0.22,1,0.36,1) 0.08s' }} />
+          <p style={{ fontSize: '8px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,174,239,0.7)', marginBottom: 6 }}>
+            {item.client} — {item.year}
+          </p>
+          <p style={{ fontSize: isWide ? '17px' : '13px', fontWeight: 700, letterSpacing: '-0.01em', lineHeight: 1.2, color: '#fff' }}>
+            {item.title}
+          </p>
+        </div>
 
-        <p style={{
-          fontSize: '12px', fontWeight: 300, lineHeight: 1.6, letterSpacing: '0.02em',
-          color: `rgba(255,255,255,${hov ? 0.42 : 0.28})`,
-          transition: 'color 0.4s ease',
-          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-        }}>
-          {item.description}
-        </p>
+        {/* Bottom glow line */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg, transparent, #00AEEF 40%, #00AEEF 60%, transparent)', opacity: hov ? 1 : 0, transition: 'opacity 0.4s', zIndex: 4 }} />
+
       </div>
     </div>
   )
@@ -169,67 +128,65 @@ function PortfolioCard({ item }: { item: PortfolioItem & { smCat: SMCat } }) {
 
 export default function Portfolio() {
   const [activeCat, setActiveCat] = useState<SMCat>('ALL')
-  const [gridOpacity, setGridOpacity] = useState(1)
-  const mobile = useIsMobile()
+  const [opacity, setOpacity] = useState(1)
 
-  const handleCat = (cat: SMCat) => {
+  const switchCat = useCallback((cat: SMCat) => {
     if (cat === activeCat) return
-    setGridOpacity(0)
-    setTimeout(() => { setActiveCat(cat); setGridOpacity(1) }, 200)
-  }
+    setOpacity(0)
+    setTimeout(() => { setActiveCat(cat); setOpacity(1) }, 220)
+  }, [activeCat])
 
-  const visible = activeCat === 'ALL' ? ALL_ITEMS : ALL_ITEMS.filter(i => i.smCat === activeCat)
+  const visible = activeCat === 'ALL'
+    ? ALL_ITEMS
+    : ALL_ITEMS.filter(i => i.smCat === activeCat)
 
   return (
     <section id="portfolio" style={{ padding: 'clamp(80px,10vw,140px) var(--pad)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
-        <p style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: '28px' }}>
-          05 / Portfolio
-        </p>
-
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '24px', marginBottom: '48px' }}>
-          <div>
-            <h2 style={{ fontSize: 'clamp(28px,3.8vw,56px)', fontWeight: 700, letterSpacing: '-0.01em', lineHeight: 1.08, marginBottom: '10px' }}>
-              One Source.<br />Multiple Realities.
-            </h2>
-            <p style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(255,255,255,0.28)', letterSpacing: '0.08em' }}>
-              NEWDIA 포트폴리오 — Studio MONSTER 시점으로 재번역
-            </p>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <p style={{ fontSize: 'clamp(12px,1.1vw,14px)', fontWeight: 300, color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', marginBottom: 8 }}>
-              {visible.length} reframed
-            </p>
-            <a
-              href="https://newdia.co.kr"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontSize: '9px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase',
-                color: 'rgba(0,174,239,0.6)', display: 'flex', alignItems: 'center', gap: 6,
-                justifyContent: 'flex-end', transition: 'color 0.2s',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#00AEEF')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,174,239,0.6)')}
-            >
-              NEWDIA 원본 보기 →
-            </a>
+        {/* Header */}
+        <div style={{ marginBottom: '56px' }}>
+          <p style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.22)', marginBottom: '24px' }}>
+            05 / PORTFOLIO — ONE SOURCE
+          </p>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px' }}>
+            <div>
+              <h2 style={{ fontSize: 'clamp(32px,4.5vw,64px)', fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.0, marginBottom: '10px' }}>
+                Same Work.<br />
+                <span style={{ color: 'rgba(255,255,255,0.28)', fontStyle: 'italic', fontWeight: 300 }}>Different Reality.</span>
+              </h2>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.08em' }}>
+                NEWDIA에서 완성된 현실 — 여기서는 그 현실의 파편
+              </p>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontSize: 'clamp(11px,1vw,13px)', color: 'rgba(255,255,255,0.22)', fontStyle: 'italic', marginBottom: 8 }}>
+                {visible.length} fragments
+              </p>
+              <a
+                href="http://localhost:3000#portfolio"
+                style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(203,219,42,0.5)', transition: 'color 0.2s', textDecoration: 'none' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#cbdb2a')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(203,219,42,0.5)')}
+              >
+                ← 구조로 보기 (NEWDIA)
+              </a>
+            </div>
           </div>
         </div>
 
-        {/* Category Tabs */}
-        <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '40px', overflowX: 'auto', scrollbarWidth: 'none' }}>
+        {/* Category Filter */}
+        <div style={{ display: 'flex', marginBottom: '48px', borderBottom: '1px solid rgba(255,255,255,0.06)', overflowX: 'auto', scrollbarWidth: 'none' }}>
           {CATS.map(cat => (
             <button
               key={cat}
-              onClick={() => handleCat(cat)}
+              onClick={() => switchCat(cat)}
               style={{
-                padding: '12px 22px', background: 'none', border: 'none', cursor: 'pointer',
-                fontSize: '9px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase',
-                color: activeCat === cat ? '#00AEEF' : 'rgba(255,255,255,0.3)',
+                padding: '14px 24px', background: 'none', border: 'none', cursor: 'pointer',
+                fontSize: '8px', fontWeight: 700, letterSpacing: '0.26em', textTransform: 'uppercase',
+                color: activeCat === cat ? '#00AEEF' : 'rgba(255,255,255,0.22)',
                 borderBottom: `2px solid ${activeCat === cat ? '#00AEEF' : 'transparent'}`,
-                marginBottom: '-1px', transition: 'color 0.3s ease, border-color 0.3s ease',
+                marginBottom: '-1px', transition: 'color 0.3s, border-color 0.3s',
                 whiteSpace: 'nowrap', fontFamily: 'inherit',
               }}
             >
@@ -238,17 +195,19 @@ export default function Portfolio() {
           ))}
         </div>
 
-        {/* Grid */}
+        {/* Fragment Grid */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: mobile ? '1fr' : 'repeat(3, 1fr)',
-          gap: mobile ? '16px' : '24px',
-          opacity: gridOpacity, transition: 'opacity 0.22s ease',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '3px',
+          opacity,
+          transition: 'opacity 0.22s ease',
         }}>
-          {visible.map(item => (
-            <PortfolioCard key={`${activeCat}-${item.id}`} item={item} />
+          {visible.map((item) => (
+            <FragmentCard key={`${activeCat}-${item.id}`} item={item} />
           ))}
         </div>
+
       </div>
     </section>
   )
