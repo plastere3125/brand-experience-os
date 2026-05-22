@@ -30,14 +30,26 @@ export default function RealityShiftEngine() {
 
   // 포트폴리오 섹션 진입 시 엔진 활성화
   useEffect(() => {
+    const activate = () => setState(s => s === 'dormant' ? 'visible' : s)
+
     const sensor = document.getElementById('portfolio')
-    if (!sensor) return
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setState(s => s === 'dormant' ? 'visible' : s) },
-      { threshold: 0.15 }
-    )
-    obs.observe(sensor)
-    return () => obs.disconnect()
+    if (sensor) {
+      const obs = new IntersectionObserver(
+        ([e]) => { if (e.isIntersecting) activate() },
+        { threshold: 0.04 }
+      )
+      obs.observe(sensor)
+
+      // scroll fallback: 포트폴리오 섹션 상단이 뷰포트 안에 들어오면 활성화
+      const onScroll = () => {
+        const rect = sensor.getBoundingClientRect()
+        if (rect.top < window.innerHeight * 0.9) activate()
+      }
+      window.addEventListener('scroll', onScroll, { passive: true })
+      onScroll() // 이미 보이는 경우
+
+      return () => { obs.disconnect(); window.removeEventListener('scroll', onScroll) }
+    }
   }, [])
 
   const launchFracture = useCallback(() => {
