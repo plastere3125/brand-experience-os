@@ -10,11 +10,11 @@ const NODES = [
   { x: '90%', y: '60%', delay: 1.3 },
 ]
 
-const METADATA = [
-  { label: 'PROJECT', value: 'ND.2026.001' },
-  { label: 'SCOPE',   value: 'FULL SYSTEM' },
-  { label: 'REV',     value: 'v.004' },
-  { label: 'STATUS',  value: 'ACTIVE' },
+const SPEC = [
+  { label: 'PARAM.01', value: 'ND.2026.001' },
+  { label: 'PARAM.02', value: 'FULL SYSTEM' },
+  { label: 'PARAM.03', value: 'v.004' },
+  { label: 'STATUS',   value: 'ACTIVE' },
 ]
 
 export default function Hero() {
@@ -138,122 +138,100 @@ export default function Hero() {
       />
 
       <div className="nd-container" style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{ maxWidth: 760 }}>
 
-          <motion.span
-            className="nd-label"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.35 }}
-            style={{ marginBottom: 28 }}
-          >
-            Structure Engine
-          </motion.span>
+        {/* Section header */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28 }}
+        >
+          <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--gray-400)' }}>
+            01 / STRUCTURE.ENGINE
+          </span>
+          <span style={{ width: 36, height: 1, background: 'var(--gray-200)', display: 'inline-block' }} />
+          <span style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--lime)', letterSpacing: '0.12em' }}>
+            ND.2026.001 — ACTIVE
+          </span>
+        </motion.div>
 
-          {/* 헤드라인 — 단어마다 구축되듯 등장 */}
-          <div style={{ marginBottom: 14 }}>
-            <h1 style={{
-              fontSize: 'clamp(56px, 8.5vw, 112px)',
-              fontWeight: 700,
-              letterSpacing: '-0.055em',
-              lineHeight: 0.92,
-              color: 'var(--black)',
-            }}>
-              {['Reality', 'is'].map((word, i) => (
-                <motion.span
-                  key={word}
-                  initial={{ opacity: 0, y: 32 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.65, delay: 0.5 + i * 0.13, ease: [0.22, 1, 0.36, 1] }}
-                  style={{ display: 'inline-block', marginRight: '0.22em' }}
-                >
-                  {word}
-                </motion.span>
-              ))}
-              <motion.span
-                initial={{ opacity: 0, y: 32 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.65, delay: 0.76, ease: [0.22, 1, 0.36, 1] }}
-                style={{ display: 'inline-block', color: 'var(--lime)' }}
-              >
-                Constructed.
-              </motion.span>
-            </h1>
-          </div>
-
-          {/* 서브 — 아키텍처 어휘 */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 1.0 }}
-            style={{
-              fontSize: 'clamp(18px, 2.2vw, 26px)',
-              fontWeight: 400,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              color: 'var(--gray-400)',
-              marginBottom: 40,
-            }}
-          >
-            Structure — Frame — Build
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.1 }}
-            style={{ fontSize: 16, lineHeight: 1.75, color: 'var(--gray-600)', marginBottom: 48, maxWidth: 440 }}
-          >
-            브랜드 구조를 설계하고,<br />
-            새로운 아이덴티티를 현실로 구축합니다.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.2 }}
-            style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}
-          >
-            <button className="nd-btn-primary" onClick={scrollToPortfolio}>
-              Explore Work →
-            </button>
-            <a href="/consultation" className="nd-btn-outline">무료 상담</a>
-          </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.0, delay: 1.6 }}
-            style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--gray-400)', marginTop: 28 }}
-          >
-            NEW<span style={{ color: 'var(--lime)' }}>DIA</span> — A NEW ID
-          </motion.p>
+        {/* 헤드라인 — 3줄 아키텍처 스택 */}
+        <div style={{ marginBottom: 52 }}>
+          <h1 style={{
+            fontSize: 'clamp(52px, 10.5vw, 140px)',
+            fontWeight: 700,
+            letterSpacing: '-0.055em',
+            lineHeight: 0.92,
+          }}>
+            <motion.div
+              initial={{ opacity: 0, y: 32 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              style={{ display: 'block', color: 'transparent', WebkitTextStroke: '1.5px var(--black)' }}
+            >
+              REALITY
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 32 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.63, ease: [0.22, 1, 0.36, 1] }}
+              style={{ display: 'block', color: 'var(--gray-400)' }}
+            >
+              IS
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 32 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.76, ease: [0.22, 1, 0.36, 1] }}
+              style={{ display: 'block', color: 'var(--lime)' }}
+            >
+              CONSTRUCTED.
+            </motion.div>
+          </h1>
         </div>
 
-        {/* 프로젝트 메타데이터 패널 — 아키텍처 도면 스타일 */}
+        {/* Bottom 2-column: copy+CTA left | STRUCTURAL PARAMETERS right */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 1.8 }}
-          style={{
-            position: 'absolute',
-            bottom: -100,
-            right: 0,
-            borderLeft: '1px solid var(--gray-200)',
-            paddingLeft: 20,
-          }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 1.0 }}
+          style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 60, alignItems: 'start' }}
         >
-          {METADATA.map(m => (
-            <div key={m.label} style={{ marginBottom: 10 }}>
-              <p style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gray-400)', marginBottom: 2 }}>
-                {m.label}
-              </p>
-              <p style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--black)', letterSpacing: '0.06em' }}>
-                {m.value}
-              </p>
+          {/* Left */}
+          <div>
+            <p style={{ fontSize: 16, lineHeight: 1.75, color: 'var(--gray-600)', marginBottom: 40, maxWidth: 400 }}>
+              브랜드 구조를 설계하고,<br />
+              새로운 아이덴티티를 현실로 구축합니다.
+            </p>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <button className="nd-btn-primary" onClick={scrollToPortfolio}>
+                Explore Work →
+              </button>
+              <a href="/consultation" className="nd-btn-outline">무료 상담</a>
             </div>
-          ))}
+            <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--gray-400)', marginTop: 28 }}>
+              NEW<span style={{ color: 'var(--lime)' }}>DIA</span> — A NEW ID
+            </p>
+          </div>
+
+          {/* Right: STRUCTURAL PARAMETERS */}
+          <div style={{ borderLeft: '1px solid var(--gray-200)', paddingLeft: 24 }}>
+            <p style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--gray-400)', marginBottom: 16 }}>
+              STRUCTURAL PARAMETERS
+            </p>
+            {SPEC.map(s => (
+              <div key={s.label} style={{ marginBottom: 12 }}>
+                <p style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gray-400)', marginBottom: 2 }}>
+                  {s.label}
+                </p>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--black)', letterSpacing: '0.06em' }}>
+                  {s.value}
+                </p>
+              </div>
+            ))}
+          </div>
         </motion.div>
+
       </div>
 
       {/* Scroll indicator */}

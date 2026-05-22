@@ -62,15 +62,30 @@ export default function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <span className="nd-label" style={{ marginBottom: 16 }}>Structure Engine</span>
+            {/* Section header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
+              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--gray-400)' }}>
+                02 / STRUCTURE.AUDIT
+              </span>
+              <span style={{ flex: 1, height: 1, background: 'var(--gray-200)', display: 'block', maxWidth: 80 }} />
+            </div>
+
             <h2 style={{
               fontSize: 'clamp(28px, 4vw, 52px)',
-              fontWeight: 600, letterSpacing: '-0.03em',
-              lineHeight: 1.05, marginBottom: 28,
+              fontWeight: 700, letterSpacing: '-0.04em',
+              lineHeight: 0.95, marginBottom: 32,
             }}>
-              현실은<br />
-              <span style={{ color: 'var(--lime)' }}>구축됩니다.</span>
+              <span style={{ display: 'block', color: 'transparent', WebkitTextStroke: '1.5px var(--black)' }}>
+                STRUCTURE
+              </span>
+              <span style={{ display: 'block', color: 'transparent', WebkitTextStroke: '1.5px var(--black)' }}>
+                DESIGNED
+              </span>
+              <span style={{ display: 'block', color: 'var(--lime)' }}>
+                BUILT.
+              </span>
             </h2>
+
             <p style={{ fontSize: 15, lineHeight: 1.9, color: 'var(--gray-600)', marginBottom: 40 }}>
               브랜드는 발견되는 것이 아닙니다.<br />
               구조적으로 설계되고, 층층이 쌓이고,<br />
@@ -79,24 +94,30 @@ export default function About() {
               아키텍처처럼 설계합니다.
             </p>
 
-            <div style={{
-              display: 'flex', gap: 32,
-              borderTop: '1px solid var(--gray-200)', paddingTop: 32,
-            }}>
-              {[
-                { num: '10+', label: 'Years' },
-                { num: '200+', label: 'Projects' },
-                { num: '50+', label: 'Clients' },
-              ].map(stat => (
-                <div key={stat.label}>
-                  <div style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--black)', marginBottom: 4 }}>
-                    {stat.num}
+            {/* STRUCTURAL PARAMETERS */}
+            <div style={{ borderTop: '1px solid var(--gray-200)', paddingTop: 28 }}>
+              <p style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--gray-400)', marginBottom: 20 }}>
+                STRUCTURAL PARAMETERS
+              </p>
+              <div style={{ display: 'flex', gap: 28 }}>
+                {[
+                  { param: 'PARAM.01', key: 'EXP.CYCLE',   value: '10+' },
+                  { param: 'PARAM.02', key: 'DELIVERIES',  value: '200+' },
+                  { param: 'PARAM.03', key: 'ENTITIES',    value: '50+' },
+                ].map(s => (
+                  <div key={s.param}>
+                    <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--gray-400)', marginBottom: 2 }}>
+                      {s.param}
+                    </div>
+                    <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--gray-400)', letterSpacing: '0.06em', marginBottom: 6 }}>
+                      {s.key}
+                    </div>
+                    <div style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--black)', lineHeight: 1 }}>
+                      {s.value}
+                    </div>
                   </div>
-                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--gray-400)' }}>
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </motion.div>
 

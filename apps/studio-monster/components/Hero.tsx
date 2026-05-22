@@ -217,8 +217,8 @@ export default function Hero() {
         <h1 style={{ fontSize: 'clamp(28px,4vw,54px)', fontWeight: 700, letterSpacing: '-0.01em', lineHeight: 1.1, marginBottom: '14px' }}>
           One Source.<br />Multiple Realities.
         </h1>
-        <p style={{ fontSize: 'clamp(12px,1.2vw,16px)', fontWeight: 300, color: 'rgba(255,255,255,0.42)', letterSpacing: '0.04em' }}>
-          Perspective shifts reality.
+        <p style={{ fontFamily: 'monospace', fontSize: 'clamp(9px,0.9vw,12px)', fontWeight: 400, color: 'rgba(255,255,255,0.42)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+          REALITY.TRANSLATION.ENGINE — v.004.ACTIVE
         </p>
         <div ref={catsRef} style={{ display: 'flex', alignItems: 'center', gap: '14px', marginTop: '28px', justifyContent: 'center', flexWrap: 'wrap', opacity: 0, transition: 'opacity 1.4s ease' }}>
           {['Perspective', 'Translation', 'Reconstruction', 'Distortion', 'Reality Shift'].map((cat, i) => (
@@ -227,6 +227,10 @@ export default function Hero() {
         </div>
         <p ref={catsKoRef} style={{ fontSize: '11px', fontWeight: 300, color: 'rgba(255,255,255,0.25)', marginTop: '10px', opacity: 0, transition: 'opacity 1.6s ease' }}>
           관점 이동 / 구조 재번역 / 의미 해체 / 감각 전환 / 숨겨진 현실
+        </p>
+        {/* ND 구조 ghost 마커 */}
+        <p style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgba(203,219,42,0.3)', marginTop: 16, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+          // ND.STRUCTURE.GHOST · 80px · ACTIVE
         </p>
       </div>
 

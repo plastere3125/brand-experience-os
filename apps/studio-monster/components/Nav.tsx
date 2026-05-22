@@ -22,6 +22,7 @@ export default function Nav() {
   const [open, setOpen]                   = useState(false)
   const [mobile, setMobile]               = useState(false)
   const [transitioning, setTransitioning] = useState(false)
+  const [structFrac, setStructFrac]       = useState(false)
 
   const checkMobile = useCallback(() => setMobile(window.innerWidth < 768), [])
 
@@ -91,31 +92,38 @@ export default function Nav() {
               >{label}</button>
             ))}
 
-            {/* Perspective Toggle → Return to Structure */}
+            {/* ← STRUCTURE — 현실 균열 버튼 */}
             <button
               onClick={returnToStructure}
+              onMouseEnter={() => setStructFrac(true)}
+              onMouseLeave={() => setStructFrac(false)}
               style={{
+                position: 'relative', overflow: 'hidden',
                 padding: '7px 14px',
-                border: '1px solid rgba(203,219,42,0.5)',
+                border: `1px solid ${structFrac ? '#cbdb2a' : 'rgba(203,219,42,0.5)'}`,
                 background: 'transparent',
-                color: 'rgba(203,219,42,0.8)',
+                color: structFrac ? '#cbdb2a' : 'rgba(203,219,42,0.8)',
+                fontFamily: 'var(--mono, monospace)',
                 fontSize: '10px', fontWeight: 700,
                 letterSpacing: '0.15em', textTransform: 'uppercase',
                 display: 'flex', alignItems: 'center', gap: 5,
-                cursor: 'pointer', transition: 'all 0.2s',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = '#cbdb2a'
-                e.currentTarget.style.color = '#cbdb2a'
-                e.currentTarget.style.background = 'rgba(203,219,42,0.08)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = 'rgba(203,219,42,0.5)'
-                e.currentTarget.style.color = 'rgba(203,219,42,0.8)'
-                e.currentTarget.style.background = 'transparent'
+                cursor: 'pointer',
+                transition: 'border-color 0.25s, color 0.25s',
               }}
             >
-              ← STRUCTURE
+              {/* NEWDIA 80px 그리드 균열 오버레이 */}
+              <div style={{
+                position: 'absolute', inset: 0, pointerEvents: 'none',
+                backgroundImage: 'linear-gradient(rgba(203,219,42,0.10) 1px,transparent 1px),linear-gradient(90deg,rgba(203,219,42,0.10) 1px,transparent 1px)',
+                backgroundSize: '80px 80px',
+                transform: structFrac ? 'scaleY(1)' : 'scaleY(0.012)',
+                transformOrigin: 'center',
+                transition: 'transform 0.38s cubic-bezier(0.22,1,0.36,1)',
+                background: structFrac ? 'rgba(203,219,42,0.06)' : 'transparent',
+              }} />
+              <span style={{ position: 'relative', zIndex: 1 }}>
+                {structFrac ? '← ENTER STRUCTURE' : '← STRUCTURE'}
+              </span>
             </button>
           </div>
         )}
