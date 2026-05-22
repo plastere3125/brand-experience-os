@@ -3,20 +3,10 @@ import { useEffect, useRef, useState } from 'react'
 import MLogo from './MLogo'
 
 const ECHO_STYLES = `
-@keyframes sm-echo-fade { 0% { opacity:0.2; } 100% { opacity:0; } }
-.sm-structure-echo {
-  position:fixed; inset:0; pointer-events:none; z-index:8000;
-  background: linear-gradient(rgba(255,255,255,0.06) 1px,transparent 1px),
-              linear-gradient(90deg,rgba(255,255,255,0.06) 1px,transparent 1px);
-  background-size:80px 80px;
-  animation: sm-echo-fade 2.5s ease-out forwards;
-}
-.sm-echo-vline {
-  position:fixed; top:0; right:15%; width:1px; height:100vh;
-  background:rgba(203,219,42,0.15);
-  pointer-events:none; z-index:8000;
-  animation: sm-echo-fade 3s ease-out forwards;
-}
+@keyframes rr-in   { 0% { opacity:0; } 8% { opacity:1; } 78% { opacity:1; } 100% { opacity:0; } }
+@keyframes rr-scan { 0% { top:0%; } 100% { top:100%; } }
+@keyframes rr-txt  { 0% { opacity:0; transform:translateY(12px); } 15% { opacity:1; transform:translateY(0); } 80% { opacity:1; } 100% { opacity:0; } }
+@keyframes rr-prog { from { width:0%; } to { width:100%; } }
 `
 
 export default function Hero() {
@@ -124,11 +114,65 @@ export default function Hero() {
       alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '0 var(--pad)',
     }}>
       <style>{ECHO_STYLES}</style>
-      {/* Transition Echo — NEWDIA에서 넘어올 때 구조 잔상 */}
-      {fromNewdia && <>
-        <div className="sm-structure-echo" />
-        <div className="sm-echo-vline" />
-      </>}
+      {/* REALITY.RECONSTRUCTION — NEWDIA에서 넘어올 때 현실 재번역 오버레이 */}
+      {fromNewdia && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9000, overflow: 'hidden',
+          background: '#0a0a09',
+          animation: 'rr-in 2.8s ease-out forwards',
+          pointerEvents: 'none',
+        }}>
+          {/* ND 80px grid dissolving */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px)',
+            backgroundSize: '80px 80px',
+          }} />
+          {/* SM 44px grid materializing */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: 'linear-gradient(rgba(0,174,239,0.045) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,0.045) 1px,transparent 1px)',
+            backgroundSize: '44px 44px',
+          }} />
+          {/* Lime vertical trace */}
+          <div style={{ position: 'absolute', top: 0, right: '15%', width: 1, height: '100%', background: 'rgba(203,219,42,0.6)' }} />
+          {/* Horizontal scan line */}
+          <div style={{
+            position: 'absolute', left: 0, right: 0, height: 1,
+            background: 'linear-gradient(90deg, transparent, rgba(203,219,42,0.9), transparent)',
+            animation: 'rr-scan 1.8s linear forwards',
+          }} />
+          {/* Corner brackets */}
+          <div style={{ position: 'absolute', top: 28, left: 28, width: 16, height: 16, borderTop: '1px solid rgba(203,219,42,0.5)', borderLeft: '1px solid rgba(203,219,42,0.5)' }} />
+          <div style={{ position: 'absolute', top: 28, right: 28, width: 16, height: 16, borderTop: '1px solid rgba(203,219,42,0.5)', borderRight: '1px solid rgba(203,219,42,0.5)' }} />
+          <div style={{ position: 'absolute', bottom: 28, left: 28, width: 16, height: 16, borderBottom: '1px solid rgba(203,219,42,0.5)', borderLeft: '1px solid rgba(203,219,42,0.5)' }} />
+          <div style={{ position: 'absolute', bottom: 28, right: 28, width: 16, height: 16, borderBottom: '1px solid rgba(203,219,42,0.5)', borderRight: '1px solid rgba(203,219,42,0.5)' }} />
+          {/* Center content */}
+          <div style={{
+            position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', textAlign: 'center',
+            animation: 'rr-txt 2.8s ease-out forwards',
+          }}>
+            <p style={{ fontFamily: 'monospace', fontSize: 9, fontWeight: 700, letterSpacing: '0.4em', textTransform: 'uppercase', color: 'rgba(203,219,42,0.45)', marginBottom: 32 }}>
+              REALITY.TRANSLATION.ENGINE
+            </p>
+            <div style={{ fontSize: 'clamp(28px,4vw,56px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 1.0, marginBottom: 8 }}>
+              <span style={{ color: 'transparent', WebkitTextStroke: '1px rgba(255,255,255,0.4)' }}>STRUCTURE.REALITY</span>
+            </div>
+            <div style={{ fontSize: 'clamp(16px,2vw,28px)', fontWeight: 700, letterSpacing: '0.1em', color: 'rgba(203,219,42,0.6)', marginBottom: 8 }}>→</div>
+            <div style={{ fontSize: 'clamp(28px,4vw,56px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 1.0, marginBottom: 36 }}>
+              <span style={{ color: '#fff' }}>PERSPECTIVE.REALITY</span>
+            </div>
+            <p style={{ fontFamily: 'monospace', fontSize: 9, fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#CBDB2A', marginBottom: 24 }}>
+              TRANSLATION.COMPLETE
+            </p>
+            {/* Progress bar */}
+            <div style={{ width: 200, height: 1, background: 'rgba(255,255,255,0.08)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, height: '100%', background: '#CBDB2A', animation: 'rr-prog 2.2s linear forwards' }} />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* NEWDIA 구조 유령 — 같은 현실의 다른 상태 */}
       <div style={{

@@ -6,6 +6,7 @@ import Portfolio from '@/components/Portfolio'
 import Packages from '@/components/Packages'
 import Contact from '@/components/Contact'
 import Footer from '@/components/Footer'
+import RealityShiftEngine from '@/components/RealityShiftEngine'
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
         <Contact />
       </main>
       <Footer />
+      <RealityShiftEngine />
     </>
   )
 }

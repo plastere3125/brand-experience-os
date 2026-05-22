@@ -15,6 +15,7 @@ const TRANSITION_STYLES = `
   @keyframes sm-grid  { from { opacity: 0 } to { opacity: 0.15 } }
   @keyframes sm-line  { from { transform: scaleY(0); transform-origin: top } to { transform: scaleY(1); transform-origin: top } }
   @keyframes sm-txt   { from { opacity: 0; transform: translateY(-20px) } to { opacity: 1; transform: translateY(0) } }
+  @keyframes sm-dot-pulse { 0%,100% { opacity:0.4; transform:scale(1); } 50% { opacity:1; transform:scale(1.4); } }
 `
 
 export default function Nav() {
@@ -92,7 +93,7 @@ export default function Nav() {
               >{label}</button>
             ))}
 
-            {/* ← STRUCTURE — 현실 균열 버튼 */}
+            {/* Reality State Gateway */}
             <button
               onClick={returnToStructure}
               onMouseEnter={() => setStructFrac(true)}
@@ -100,29 +101,35 @@ export default function Nav() {
               style={{
                 position: 'relative', overflow: 'hidden',
                 padding: '7px 14px',
-                border: `1px solid ${structFrac ? '#cbdb2a' : 'rgba(203,219,42,0.5)'}`,
-                background: 'transparent',
-                color: structFrac ? '#cbdb2a' : 'rgba(203,219,42,0.8)',
+                border: `1px solid ${structFrac ? '#cbdb2a' : 'rgba(203,219,42,0.28)'}`,
+                background: structFrac ? 'rgba(203,219,42,0.04)' : 'transparent',
+                color: structFrac ? '#cbdb2a' : 'rgba(203,219,42,0.55)',
                 fontFamily: 'var(--mono, monospace)',
                 fontSize: '10px', fontWeight: 700,
                 letterSpacing: '0.15em', textTransform: 'uppercase',
-                display: 'flex', alignItems: 'center', gap: 5,
+                display: 'flex', alignItems: 'center', gap: 6,
                 cursor: 'pointer',
-                transition: 'border-color 0.25s, color 0.25s',
+                transition: 'border-color 0.3s, color 0.3s, background 0.3s',
               }}
             >
-              {/* NEWDIA 80px 그리드 균열 오버레이 */}
+              {/* NEWDIA 80px grid fracture overlay */}
               <div style={{
                 position: 'absolute', inset: 0, pointerEvents: 'none',
                 backgroundImage: 'linear-gradient(rgba(203,219,42,0.10) 1px,transparent 1px),linear-gradient(90deg,rgba(203,219,42,0.10) 1px,transparent 1px)',
                 backgroundSize: '80px 80px',
                 transform: structFrac ? 'scaleY(1)' : 'scaleY(0.012)',
                 transformOrigin: 'center',
-                transition: 'transform 0.38s cubic-bezier(0.22,1,0.36,1)',
-                background: structFrac ? 'rgba(203,219,42,0.06)' : 'transparent',
+                transition: 'transform 0.42s cubic-bezier(0.22,1,0.36,1)',
+              }} />
+              {/* Pulsing state dot */}
+              <div style={{
+                width: 4, height: 4, borderRadius: '50%', background: '#CBDB2A',
+                flexShrink: 0, position: 'relative', zIndex: 1,
+                animation: structFrac ? 'none' : 'sm-dot-pulse 2s ease-in-out infinite',
+                opacity: structFrac ? 1 : undefined,
               }} />
               <span style={{ position: 'relative', zIndex: 1 }}>
-                {structFrac ? '← ENTER STRUCTURE' : '← STRUCTURE'}
+                {structFrac ? '← STRUCTURE.REALITY' : 'PERSPECTIVE.REALITY'}
               </span>
             </button>
           </div>
