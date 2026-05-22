@@ -1828,14 +1828,19 @@ export default function Work() {
     <section id="work" style={{ paddingTop: 'clamp(80px,10vw,140px)' }}>
 
       {/* Section header */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto', marginBottom: '64px' }}>
-        <p style={{
-          fontSize: '10px', fontWeight: 600, letterSpacing: '0.24em',
-          textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)',
-          marginBottom: '28px',
-        }}>
-          03 / Perspective In Reality
-        </p>
+      <div style={{ maxWidth: '1100px', margin: '0 auto', marginBottom: '64px', padding: '0 var(--pad)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: '28px' }}>
+          <p style={{
+            fontFamily: 'monospace', fontSize: '9px', fontWeight: 700, letterSpacing: '0.28em',
+            textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)',
+          }}>
+            03 / REALITY.TRANSLATION.OUTPUT
+          </p>
+          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)', maxWidth: 48 }} />
+          <p style={{ fontFamily: 'monospace', fontSize: '8px', letterSpacing: '0.14em', color: 'rgba(203,219,42,0.35)', textTransform: 'uppercase' }}>
+            03.INSTANCES — ACTIVE
+          </p>
+        </div>
         <div style={{
           display: 'flex', alignItems: 'flex-end',
           justifyContent: 'space-between', flexWrap: 'wrap', gap: '24px',
@@ -1843,29 +1848,30 @@ export default function Work() {
           <div>
             <h2 style={{
               fontSize: 'clamp(28px,3.8vw,56px)',
-              fontWeight: 700, letterSpacing: '-0.01em', lineHeight: 1.08,
-              marginBottom: '10px',
+              fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.96,
+              marginBottom: '14px',
             }}>
-              Perspective<br />In Reality
+              <span style={{ display: 'block', color: 'transparent', WebkitTextStroke: '1.5px rgba(255,255,255,0.6)' }}>PERSPECTIVE</span>
+              <span style={{ display: 'block', color: '#fff' }}>BECOMES REALITY.</span>
             </h2>
             <p style={{
-              fontSize: '11px', fontWeight: 400,
-              color: 'rgba(255,255,255,0.28)', letterSpacing: '0.08em',
+              fontFamily: 'monospace', fontSize: '10px', fontWeight: 400,
+              color: 'rgba(255,255,255,0.22)', letterSpacing: '0.14em', textTransform: 'uppercase',
             }}>
-              관점이 실제 브랜드가 되다
+              관점이 실제 브랜드가 된 3개의 증거
             </p>
           </div>
           <div style={{ textAlign: 'right', paddingBottom: '4px' }}>
             <p style={{
-              fontSize: 'clamp(13px,1.2vw,16px)', fontWeight: 300,
-              color: 'rgba(255,255,255,0.45)', fontStyle: 'italic',
+              fontFamily: 'monospace', fontSize: '8px', fontWeight: 700,
+              color: 'rgba(203,219,42,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase',
               marginBottom: '6px',
             }}>
-              Perspective only matters<br />when it becomes reality.
+              TRANSLATION.COMPLETE →
             </p>
             <p style={{
-              fontSize: '11px', color: 'rgba(255,255,255,0.2)',
-              letterSpacing: '0.04em',
+              fontFamily: 'monospace', fontSize: '8px', color: 'rgba(255,255,255,0.18)',
+              letterSpacing: '0.14em', textTransform: 'uppercase',
             }}>
               관점은 실제가 될 때 의미를 가집니다.
             </p>

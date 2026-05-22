@@ -4,9 +4,9 @@ import MLogo from './MLogo'
 
 const STAGES = [
   {
-    num: '01', label: 'OBSERVE',
-    en: ['We begin by observing', 'what already exists.'],
-    ko: '우리는 먼저 이미 존재하는 것을 관찰합니다.',
+    num: '01', label: 'REALITY.SCAN',
+    en: ['Current reality', 'being scanned.'],
+    ko: '현재 현실의 구조를 스캔합니다.',
     logoMode: 'wire' as const,
     logoTransform: 'rotateX(52deg) rotateY(-18deg) scale(0.62)',
     logoOpacity: 0.18,
@@ -17,9 +17,9 @@ const STAGES = [
     shadowW: 55,
   },
   {
-    num: '02', label: 'SHIFT',
-    en: ['A slight shift changes', 'the meaning entirely.'],
-    ko: '작은 시선의 변화는 의미를 완전히 바꿉니다.',
+    num: '02', label: 'FRACTURE.POINT',
+    en: ['The fracture', 'begins here.'],
+    ko: '균열이 시작되는 지점.',
     logoMode: 'full' as const,
     logoTransform: 'rotateY(68deg) rotateX(-20deg)',
     logoOpacity: 0.88,
@@ -30,8 +30,8 @@ const STAGES = [
     shadowW: 75,
   },
   {
-    num: '03', label: 'REVEAL',
-    en: ['Hidden structures', 'begin to appear.'],
+    num: '03', label: 'STRUCTURE.EXPOSE',
+    en: ['Hidden structure', 'now visible.'],
     ko: '보이지 않던 구조가 드러납니다.',
     logoMode: 'wire' as const,
     logoTransform: 'rotateX(-58deg) rotateY(14deg)',
@@ -43,9 +43,9 @@ const STAGES = [
     shadowW: 165,
   },
   {
-    num: '04', label: 'REFRAME',
-    en: ['Perspective', 'reconstructs identity.'],
-    ko: '관점은 브랜드를 다시 정의합니다.',
+    num: '04', label: 'REALITY.TRANSLATE',
+    en: ['Reality is being', 're-translated.'],
+    ko: '현실이 재번역됩니다.',
     logoMode: 'full' as const,
     logoTransform: 'rotateY(-64deg) rotateX(16deg)',
     logoOpacity: 0.92,
@@ -56,16 +56,16 @@ const STAGES = [
     shadowW: 78,
   },
   {
-    num: '05', label: 'DIRECTION',
-    en: ['Direction emerges', 'from perspective.'],
-    ko: '브랜드의 방향은 관점에서 시작됩니다.',
+    num: '05', label: 'NEW.STATE.ACTIVE',
+    en: ['New reality state', 'now active.'],
+    ko: '새로운 현실 상태가 활성화됩니다.',
     logoMode: 'full' as const,
     logoTransform: 'rotateX(0deg) rotateY(0deg)',
     logoOpacity: 1,
     logoFilter: 'none',
     gridOpacity: 0.06,
     floorOpacity: 0.45,
-    glowColor: 'rgba(0,174,239,0.32)',
+    glowColor: 'rgba(203,219,42,0.18)',
     shadowW: 205,
   },
 ]
@@ -116,7 +116,7 @@ export default function Experience() {
     <div ref={containerRef} id="about" style={{ height: '500vh', position: 'relative' }}>
       <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#000' }}>
 
-        {/* ─── 배경 그리드 (기존) ─────────────────────────────── */}
+        {/* ─── 배경 그리드 ─────────────────────────────── */}
         <div style={{
           position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
           opacity: s.gridOpacity,
@@ -126,6 +126,18 @@ export default function Experience() {
             'linear-gradient(90deg, rgba(0,174,239,.07) 1px, transparent 1px)',
           ].join(','),
           backgroundSize: '44px 44px',
+        }} />
+
+        {/* ─── ND Structure Ghost — NEWDIA DNA가 침투하는 80px 그리드 ─── */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
+          opacity: Math.max(0, (stageIdx - 2) * 0.055),
+          transition: 'opacity 1.6s ease',
+          backgroundImage: [
+            'linear-gradient(rgba(203,219,42,0.055) 1px,transparent 1px)',
+            'linear-gradient(90deg,rgba(203,219,42,0.055) 1px,transparent 1px)',
+          ].join(','),
+          backgroundSize: '80px 80px',
         }} />
 
         {/* ─── 3D PERSPECTIVE FLOOR ─────────────────────────────
@@ -200,28 +212,34 @@ export default function Experience() {
 
             {/* Section label */}
             <div style={{ paddingTop: 'clamp(80px,10vw,140px)' }}>
-              <p style={{
-                fontSize: '10px', fontWeight: 600,
-                letterSpacing: '0.24em', textTransform: 'uppercase',
-                color: 'rgba(255,255,255,0.25)', marginBottom: '20px',
-              }}>
-                02 / About
-              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: '20px' }}>
+                <p style={{
+                  fontFamily: 'monospace', fontSize: '9px', fontWeight: 700,
+                  letterSpacing: '0.28em', textTransform: 'uppercase',
+                  color: 'rgba(255,255,255,0.25)',
+                }}>
+                  02 / REALITY.FRACTURE.ENGINE
+                </p>
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)', maxWidth: 60 }} />
+                <p style={{ fontFamily: 'monospace', fontSize: '8px', letterSpacing: '0.14em', color: 'rgba(203,219,42,0.3)', textTransform: 'uppercase' }}>
+                  SEQUENCE.05
+                </p>
+              </div>
               <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
-                  <h2 style={{ fontSize: 'clamp(24px,3.2vw,48px)', fontWeight: 700, letterSpacing: '-0.01em', lineHeight: 1.08, marginBottom: '8px' }}>
-                    Five Perspectives.<br />One Direction.
+                  <h2 style={{ fontSize: 'clamp(24px,3.2vw,48px)', fontWeight: 700, letterSpacing: '-0.035em', lineHeight: 1.0, marginBottom: '8px' }}>
+                    REALITY.STATES.<br />SEQUENCE.05
                   </h2>
-                  <p style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(255,255,255,0.28)', letterSpacing: '0.06em' }}>
-                    브랜드의 방향을 찾는 다섯 가지 시선
+                  <p style={{ fontFamily: 'monospace', fontSize: '10px', fontWeight: 400, color: 'rgba(255,255,255,0.22)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                    관점이 현실을 재번역하는 5단계
                   </p>
                 </div>
                 <div style={{ textAlign: 'right', paddingBottom: '2px' }}>
-                  <p style={{ fontSize: 'clamp(12px,1.1vw,15px)', fontWeight: 300, color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', marginBottom: '4px' }}>
-                    Perspective becomes direction.
+                  <p style={{ fontFamily: 'monospace', fontSize: '9px', fontWeight: 400, color: 'rgba(255,255,255,0.28)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '6px' }}>
+                    PERSPECTIVE.BREAKS →
                   </p>
-                  <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.04em' }}>
-                    관점은 결국 방향이 됩니다.
+                  <p style={{ fontFamily: 'monospace', fontSize: '9px', fontWeight: 700, color: 'rgba(203,219,42,0.45)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+                    REALITY.TRANSLATES
                   </p>
                 </div>
               </div>
@@ -238,21 +256,24 @@ export default function Experience() {
                 {/* Left: stage text */}
                 <div style={{ opacity: textOpacity, transition: 'opacity 0.28s ease' }}>
                   <p style={{
+                    fontFamily: 'monospace',
                     fontSize: '9px', fontWeight: 700,
                     letterSpacing: '0.32em', textTransform: 'uppercase',
-                    color: 'rgba(0,174,239,0.75)', marginBottom: '20px',
+                    color: displayIdx >= 2 ? 'rgba(203,219,42,0.85)' : 'rgba(0,174,239,0.75)',
+                    marginBottom: '20px',
+                    transition: 'color 0.6s ease',
                   }}>
                     {d.num} — {d.label}
                   </p>
                   <h2 style={{
-                    fontSize: 'clamp(24px,2.8vw,42px)',
-                    fontWeight: 700, letterSpacing: '0em', lineHeight: 1.15, marginBottom: '20px',
+                    fontSize: 'clamp(28px,3.2vw,48px)',
+                    fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.05, marginBottom: '20px',
                   }}>
                     {d.en.map((line, i) => (
                       <span key={i} style={{ display: 'block' }}>{line}</span>
                     ))}
                   </h2>
-                  <p style={{ fontSize: '13px', fontWeight: 300, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.04em' }}>
+                  <p style={{ fontFamily: 'monospace', fontSize: '11px', fontWeight: 400, color: 'rgba(255,255,255,0.32)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                     {d.ko}
                   </p>
                 </div>
@@ -352,8 +373,12 @@ export default function Experience() {
             <div key={i} style={{
               width: '2px',
               height: i === stageIdx ? '28px' : '8px',
-              background: i === stageIdx ? '#00AEEF' : i < stageIdx ? 'rgba(0,174,239,0.35)' : 'rgba(255,255,255,0.15)',
-              transition: 'height 0.5s cubic-bezier(0.22,1,0.36,1), background 0.5s ease',
+              background: i === stageIdx
+                ? (i >= 2 ? '#CBDB2A' : '#00AEEF')
+                : i < stageIdx
+                  ? (i >= 2 ? 'rgba(203,219,42,0.35)' : 'rgba(0,174,239,0.35)')
+                  : 'rgba(255,255,255,0.15)',
+              transition: 'height 0.5s cubic-bezier(0.22,1,0.36,1), background 0.6s ease',
               borderRadius: '1px',
             }} />
           ))}

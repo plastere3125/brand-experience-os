@@ -95,6 +95,41 @@ function Modal({ item, onClose }: { item: PortfolioItem; onClose: () => void }) 
             ))}
           </div>
         )}
+        {/* STRUCTURE.BREAKDOWN */}
+        <div style={{ borderBottom: '1px solid var(--gray-200)', padding: '14px 36px', background: 'var(--gray-100)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+            <p style={{ fontFamily: 'var(--mono)', fontSize: 7, fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--gray-400)' }}>
+              STRUCTURE.BREAKDOWN
+            </p>
+            <div style={{ flex: 1, height: 1, background: 'var(--gray-200)' }} />
+            <p style={{ fontFamily: 'var(--mono)', fontSize: 7, color: 'var(--lime)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+              NEWDIA STRUCTURE — ACTIVE
+            </p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--gray-200)' }}>
+            {[
+              { param: 'PARAM.01', system: 'HIERARCHY', value: 'TYPE.SCALE' },
+              { param: 'PARAM.02', system: 'SPACING.DNA', value: 'BASELINE.GRID' },
+              { param: 'PARAM.03', system: 'ALIGNMENT', value: 'AXIS.LOCK' },
+              { param: 'PARAM.04', system: 'COMPOSITION', value: 'LAYER.ORDER' },
+              { param: 'PARAM.05', system: 'LAYOUT.MODULE', value: 'GRID.SYSTEM' },
+              { param: 'PARAM.06', system: 'TYPOGRAPHY', value: 'WEIGHT.SCALE' },
+            ].map(s => (
+              <div key={s.param} style={{ background: 'var(--white)', padding: '10px 12px' }}>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 7, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gray-400)', marginBottom: 3 }}>
+                  {s.param}
+                </p>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 8, color: 'var(--black)', letterSpacing: '0.06em', marginBottom: 2 }}>
+                  {s.system}
+                </p>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 7, color: 'var(--lime)', letterSpacing: '0.08em' }}>
+                  {s.value}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div style={{ padding: '28px 36px 36px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
             <div>

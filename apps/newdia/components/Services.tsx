@@ -45,20 +45,25 @@ export default function Services() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 80, alignItems: 'start' }}>
           {/* Left */}
           <div style={{ position: 'sticky', top: 120 }}>
-            <span className="nd-label" style={{ marginBottom: 16 }}>Services</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)' }}>
+                03 / STRUCTURE.SYSTEMS
+              </span>
+            </div>
             <h2 style={{
               fontSize: 'clamp(28px, 4vw, 44px)',
-              fontWeight: 600,
-              letterSpacing: '-0.03em',
-              lineHeight: 1.1,
+              fontWeight: 700,
+              letterSpacing: '-0.04em',
+              lineHeight: 0.95,
               color: 'var(--white)',
               marginBottom: 24,
             }}>
-              How We<br />Frame Reality.
+              <span style={{ display: 'block', color: 'transparent', WebkitTextStroke: '1.5px rgba(255,255,255,0.5)' }}>STRUCTURE</span>
+              <span style={{ display: 'block', color: 'var(--lime)' }}>SYSTEMS.</span>
             </h2>
-            <p style={{ fontSize: 15, lineHeight: 1.7, color: 'rgba(255,255,255,0.45)' }}>
+            <p style={{ fontFamily: 'var(--mono)', fontSize: 11, lineHeight: 1.8, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
               구조를 설계하고<br />
-              현실을 프레이밍합니다.
+              현실을 구축합니다.
             </p>
           </div>
 
