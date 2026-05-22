@@ -133,24 +133,43 @@ export default function Hero() {
       {/* NEWDIA 구조 유령 — 같은 현실의 다른 상태 */}
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
-        backgroundImage: 'linear-gradient(rgba(203,219,42,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(203,219,42,0.018) 1px,transparent 1px)',
+        backgroundImage: 'linear-gradient(rgba(203,219,42,0.032) 1px,transparent 1px),linear-gradient(90deg,rgba(203,219,42,0.032) 1px,transparent 1px)',
         backgroundSize: '80px 80px',
       }} />
-      {/* 구조 유령 측정선 — NEWDIA DNA */}
-      <div style={{ position:'absolute', top:0, right:'15%', width:1, height:'100%', background:'rgba(203,219,42,0.04)', pointerEvents:'none', zIndex:0 }} />
+      {/* 구조 유령 측정선 — NEWDIA DNA vertical */}
+      <div style={{ position:'absolute', top:0, right:'15%', width:1, height:'100%', background:'rgba(203,219,42,0.07)', pointerEvents:'none', zIndex:0 }} />
+      {/* 구조 유령 측정선 — horizontal */}
+      <div style={{ position:'absolute', top:'62%', right:0, width:'15%', height:1, background:'rgba(203,219,42,0.07)', pointerEvents:'none', zIndex:0 }} />
+      {/* NEWDIA coordinate markers */}
       {[
-        { x:'14%', y:'18%', text:'// 1200' },
-        { x:'78%', y:'72%', text:'—  80px' },
-        { x:'42%', y:'88%', text:'ND.001'  },
+        { x:'14%', y:'18%', text:'// ND.1200' },
+        { x:'78%', y:'72%', text:'— 80px —'  },
+        { x:'42%', y:'88%', text:'REALITY.01' },
+        { x:'86%', y:'26%', text:'STRUCT'     },
+        { x:'7%',  y:'62%', text:'0001'       },
       ].map((m,i) => (
         <div key={i} style={{
           position:'absolute', left:m.x, top:m.y, pointerEvents:'none', zIndex:0,
-          fontSize:8, fontFamily:'monospace',
-          color:'rgba(203,219,42,0.04)',
-          letterSpacing:'0.12em',
+          fontSize:7, fontFamily:'monospace',
+          color:'rgba(203,219,42,0.08)',
+          letterSpacing:'0.14em', textTransform:'uppercase',
         }}>
           {m.text}
         </div>
+      ))}
+      {/* Reality bleed dots — lime 맥박 */}
+      {[
+        { top:'22%', left:'18%' }, { top:'68%', left:'34%' },
+        { top:'44%', left:'8%'  }, { top:'78%', left:'58%' },
+        { top:'15%', left:'72%' },
+      ].map((pos,i) => (
+        <div key={i} style={{
+          position:'absolute', ...pos,
+          width:3, height:3, background:'#CBDB2A', borderRadius:'50%',
+          pointerEvents:'none', zIndex:0,
+          animation:`reality-bleed ${3.2 + i * 0.8}s ease-in-out infinite`,
+          animationDelay:`${i * 0.9}s`,
+        }} />
       ))}
 
       {/* Blueprint grid */}

@@ -80,25 +80,82 @@ export default function Nav() {
               </button>
             ))}
 
-            {/* Perspective Toggle */}
-            <button
-              onClick={shiftPerspective}
-              style={{
-                padding: '8px 16px',
-                border: '1px solid var(--lime)',
-                background: 'transparent',
-                color: 'var(--black)',
-                fontSize: 11, fontWeight: 700,
-                letterSpacing: '0.12em', textTransform: 'uppercase',
-                display: 'flex', alignItems: 'center', gap: 6,
-                cursor: 'pointer',
-                transition: 'background 0.2s ease',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--lime)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-            >
-              <span style={{ fontSize: 14 }}>⟳</span> Shift Perspective
-            </button>
+            {/* Shift Perspective — Reality Fracture */}
+            <div style={{ position: 'relative', height: 38, minWidth: 160 }}>
+              {/* 균열 본체 — dark가 열림 */}
+              <div
+                onClick={shiftPerspective}
+                style={{
+                  position: 'absolute', inset: 0,
+                  background: 'var(--black)',
+                  transformOrigin: 'center',
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={e => {
+                  const el = e.currentTarget
+                  el.style.transform = 'scaleY(1)'
+                  el.style.transition = 'transform 0.52s cubic-bezier(0.16,1,0.3,1)'
+                  const grid = el.querySelector('.sm-grid-inner') as HTMLElement
+                  if (grid) { grid.style.opacity = '1'; grid.style.transition = 'opacity 0.28s ease 0.24s' }
+                  const rest = el.nextElementSibling as HTMLElement
+                  if (rest) rest.style.opacity = '0'
+                  const hover = el.nextElementSibling?.nextElementSibling as HTMLElement
+                  if (hover) { hover.style.opacity = '1'; hover.style.transition = 'opacity 0.22s ease 0.28s' }
+                }}
+                onMouseLeave={e => {
+                  const el = e.currentTarget
+                  el.style.transform = 'scaleY(0.012)'
+                  el.style.transition = 'transform 0.38s cubic-bezier(0.16,1,0.3,1)'
+                  const grid = el.querySelector('.sm-grid-inner') as HTMLElement
+                  if (grid) { grid.style.opacity = '0'; grid.style.transition = 'opacity 0.14s ease' }
+                  const rest = el.nextElementSibling as HTMLElement
+                  if (rest) rest.style.opacity = '1'
+                  const hover = el.nextElementSibling?.nextElementSibling as HTMLElement
+                  if (hover) { hover.style.opacity = '0' }
+                }}
+              >
+                <div
+                  className="sm-grid-inner"
+                  style={{
+                    position: 'absolute', inset: 0, opacity: 0,
+                    backgroundImage: [
+                      'linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)',
+                      'linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)',
+                    ].join(','),
+                    backgroundSize: '44px 44px',
+                  }}
+                />
+              </div>
+              {/* 레스트 좌표 라벨 */}
+              <div style={{
+                position: 'absolute', inset: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                pointerEvents: 'none', zIndex: 1,
+                transition: 'opacity 0.14s ease',
+              }}>
+                <span style={{
+                  fontFamily: 'var(--mono)', fontSize: 8,
+                  letterSpacing: '0.16em', textTransform: 'uppercase',
+                  color: 'rgba(0,0,0,0.38)',
+                  border: '1px solid rgba(0,0,0,0.18)',
+                  padding: '6px 14px',
+                }}>— SHIFT PERSPECTIVE</span>
+              </div>
+              {/* 호버 텍스트 */}
+              <div style={{
+                position: 'absolute', inset: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                pointerEvents: 'none', zIndex: 2, opacity: 0,
+                transition: 'opacity 0.22s ease',
+              }}>
+                <span style={{
+                  fontSize: 9, fontWeight: 700,
+                  letterSpacing: '0.2em', textTransform: 'uppercase',
+                  color: '#fff',
+                }}>ENTER MONSTER →</span>
+              </div>
+            </div>
 
             <a
               href="/consultation"

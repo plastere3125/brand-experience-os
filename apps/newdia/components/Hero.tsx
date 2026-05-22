@@ -54,6 +54,48 @@ export default function Hero() {
         opacity: 0.45,
       }} />
 
+      {/* MONSTER 관점 유령 — 44px 블루 그리드, 동일 현실의 다른 상태 */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
+        backgroundImage: 'linear-gradient(rgba(0,174,239,0.028) 1px,transparent 1px),linear-gradient(90deg,rgba(0,174,239,0.028) 1px,transparent 1px)',
+        backgroundSize: '44px 44px',
+      }} />
+      {/* M 심볼 — MONSTER 유령, 우측 공간 */}
+      <div style={{
+        position: 'absolute', right: '5%', top: '50%',
+        transform: 'translateY(-50%)',
+        width: 'clamp(180px,22vw,280px)', height: 'clamp(180px,22vw,280px)',
+        pointerEvents: 'none', zIndex: 0, opacity: 0.022,
+        animation: 'sm-ghost-drift 20s ease-in-out infinite',
+      }}>
+        <svg viewBox="0 0 100 100" style={{ width:'100%', height:'100%' }}>
+          <g fill="none" stroke="#00AEEF" strokeWidth="1.2" strokeLinejoin="round">
+            <polyline points="8,86 8,14 32,50 50,14 68,50 92,14 92,86" opacity="0.9"/>
+            <polyline points="8,86 8,14 32,50 50,14 68,50 92,14 92,86" opacity="0.4" transform="translate(2,2)"/>
+            <line x1="8" y1="14" x2="8" y2="86" opacity="0.5"/>
+            <line x1="92" y1="14" x2="92" y2="86" opacity="0.5"/>
+            <line x1="8" y1="50" x2="92" y2="50" strokeDasharray="3,4" opacity="0.3"/>
+          </g>
+        </svg>
+      </div>
+      {/* SM coordinate markers — blue */}
+      {[
+        { x:'62%', y:'15%', text:'SM.44px' },
+        { x:'82%', y:'55%', text:'PERSPECTIVE' },
+        { x:'55%', y:'82%', text:'// MONSTER' },
+      ].map((m,i) => (
+        <div key={i} style={{
+          position:'absolute', left:m.x, top:m.y, pointerEvents:'none', zIndex:0,
+          fontSize:7, fontFamily:'monospace',
+          color:'rgba(0,174,239,0.08)',
+          letterSpacing:'0.14em', textTransform:'uppercase',
+          animation:`sm-coord-pulse ${4 + i * 1.1}s ease-in-out infinite`,
+          animationDelay:`${i * 1.3}s`,
+        }}>
+          {m.text}
+        </div>
+      ))}
+
       {/* 수직 측정선 */}
       <motion.div
         initial={{ scaleY: 0, transformOrigin: 'top' }}

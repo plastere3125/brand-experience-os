@@ -13,6 +13,37 @@
   --container: 1200px;
   --header-h:  80px;
   --mono: 'SF Mono', 'Fira Mono', 'Courier New', monospace;
+  /* Reality DNA — shared with MONSTER */
+  --sm-blue: #00AEEF;
+  --reality-grid: 44px;
+  --reality-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── MONSTER ghost drift ── */
+@keyframes sm-ghost-drift {
+  0%   { transform: translate(0px, 0px) rotate(6deg) scale(1.12); }
+  35%  { transform: translate(4px, -6px) rotate(4.5deg) scale(1.15); }
+  68%  { transform: translate(-3px, 4px) rotate(7deg) scale(1.13); }
+  100% { transform: translate(0px, 0px) rotate(6deg) scale(1.12); }
+}
+
+/* ── Reality fracture — dark tears open ── */
+@keyframes nd-fracture-open {
+  0%   { transform: scaleY(0.012); }
+  55%  { transform: scaleY(1.04); }
+  100% { transform: scaleY(1); }
+}
+
+/* ── SM coordinate blink ── */
+@keyframes sm-coord-pulse {
+  0%, 100% { opacity: 0.06; }
+  50%       { opacity: 0.16; }
+}
+
+/* ── Reality Archive record expand ── */
+@keyframes nd-record-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }

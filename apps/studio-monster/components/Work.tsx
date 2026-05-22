@@ -608,42 +608,71 @@ function NewdiaShowcase({ isHov, onEnter, onLeave, cfg }: {
             </div>
           </div>
 
-          {/* ─ CTA: Visit NEWDIA ─ */}
-          <a
-            href={cfg.ctaUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          {/* ─ CTA: Reality Fracture — 현실 균열로서의 진입점 ─ */}
+          <div
             onMouseEnter={() => setCtaHov(true)}
             onMouseLeave={() => setCtaHov(false)}
-            style={{
-              flexShrink: 0,
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '14px 20px',
-              background: ctaHov ? '#CBDB2A' : '#0A0A09',
-              border: `1px solid rgba(203,219,42,${ctaHov ? 0.0 : 0.18})`,
-              textDecoration: 'none', cursor: 'none',
-              transition: 'background 0.35s ease, border-color 0.35s ease',
-            }}
+            style={{ flexShrink: 0, position: 'relative', minHeight: '52px', cursor: 'none' }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <span style={{
-                fontSize: '9px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase',
-                color: ctaHov ? '#000' : '#fff',
-                transition: 'color 0.3s ease',
-              }}>{cfg.ctaLabel}</span>
-              <span style={{
-                fontSize: '8px', letterSpacing: '0.1em',
-                color: ctaHov ? 'rgba(0,0,0,0.5)' : 'rgba(203,219,42,0.55)',
-                transition: 'color 0.3s ease',
-              }}>{cfg.ctaUrl.replace(/^https?:\/\//, '')}</span>
+            {/* 라임 균열 — scaleY로 열림 */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: '#CBDB2A',
+              transform: ctaHov ? 'scaleY(1)' : 'scaleY(0.019)',
+              transformOrigin: 'center',
+              transition: 'transform 0.58s cubic-bezier(0.16,1,0.3,1)',
+              overflow: 'hidden',
+            }}>
+              {/* 균열 내부 — MONSTER 44px 그리드 노출 */}
+              <div style={{
+                position: 'absolute', inset: 0, pointerEvents: 'none',
+                backgroundImage: [
+                  'linear-gradient(rgba(0,0,0,0.07) 1px, transparent 1px)',
+                  'linear-gradient(90deg, rgba(0,0,0,0.07) 1px, transparent 1px)',
+                ].join(','),
+                backgroundSize: '44px 44px',
+                opacity: ctaHov ? 1 : 0,
+                transition: 'opacity 0.3s ease 0.22s',
+              }} />
             </div>
-            <span style={{
-              fontSize: '13px',
-              color: ctaHov ? '#000' : 'rgba(203,219,42,0.7)',
-              transform: ctaHov ? 'translateX(4px)' : 'none',
-              transition: 'color 0.3s ease, transform 0.35s cubic-bezier(0.22,1,0.36,1)',
-            }}>→</span>
-          </a>
+            {/* 레스트 — 좌표 라벨 */}
+            <div style={{
+              position: 'absolute', inset: 0, zIndex: 1,
+              display: 'flex', alignItems: 'center', padding: '0 20px',
+              opacity: ctaHov ? 0 : 1,
+              transition: 'opacity 0.16s ease',
+              pointerEvents: 'none',
+            }}>
+              <span style={{
+                fontFamily: 'monospace', fontSize: '8px', letterSpacing: '0.14em',
+                color: 'rgba(203,219,42,0.5)',
+              }}>
+                — REALITY.01 · {cfg.ctaUrl.replace(/^https?:\/\//, '')}
+              </span>
+            </div>
+            {/* 호버 — Enter Reality 링크 */}
+            <a
+              href={cfg.ctaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                position: 'absolute', inset: 0, zIndex: 2,
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '0 20px', textDecoration: 'none',
+                opacity: ctaHov ? 1 : 0,
+                transition: 'opacity 0.28s ease 0.22s',
+              }}
+            >
+              <span style={{
+                fontSize: '9px', fontWeight: 700, letterSpacing: '0.24em',
+                textTransform: 'uppercase', color: '#000',
+              }}>ENTER REALITY → NEWDIA</span>
+              <span style={{
+                fontFamily: 'monospace', fontSize: '8px',
+                letterSpacing: '0.1em', color: 'rgba(0,0,0,0.42)',
+              }}>{cfg.ctaUrl.replace(/^https?:\/\//, '')}</span>
+            </a>
+          </div>
         </div>
       </div>
     </div>

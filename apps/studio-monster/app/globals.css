@@ -74,3 +74,30 @@ body.ch .crr { width: 64px; height: 64px; border-color: rgba(0,174,239,.28); }
   92%  { opacity: 1; }
   100% { top: 100%; opacity: 0; }
 }
+
+/* ── Reality DNA — shared constants ── */
+:root {
+  --nd-lime: #CBDB2A;
+  --sm-blue: #00AEEF;
+  --reality-grid: 44px;
+  --reality-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ghost-drift {
+  0%   { transform: rotate(-8deg) scale(1.18) translate(0px, 0px); }
+  33%  { transform: rotate(-6.5deg) scale(1.21) translate(3px, -5px); }
+  66%  { transform: rotate(-9deg) scale(1.19) translate(-3px, 4px); }
+  100% { transform: rotate(-8deg) scale(1.18) translate(0px, 0px); }
+}
+
+@keyframes reality-bleed {
+  0%, 100% { opacity: 0.1; transform: scale(1); }
+  50%       { opacity: 0.44; transform: scale(1.9); }
+}
+
+@keyframes nd-ghost-scan {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  6%   { opacity: 0.6; }
+  94%  { opacity: 0.4; }
+  100% { transform: translateY(1200%); opacity: 0; }
+}

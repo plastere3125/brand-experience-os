@@ -1,74 +1,127 @@
 'use client'
 
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect, useCallback } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { siteData, type PortfolioCategory, type PortfolioItem } from '@beos/core/portfolio'
 
-const CAT_META: Record<PortfolioCategory, { index: string; label: string; system: string }> = {
-  visual:    { index: '01', label: 'Brand Identity',  system: 'IDENTITY STRUCTURE SYSTEM' },
-  web:       { index: '02', label: 'Web Design',      system: 'DIGITAL REALITY SYSTEM' },
-  photo:     { index: '03', label: 'Photography',     system: 'VISUAL CAPTURE SYSTEM' },
-  marketing: { index: '04', label: 'Marketing',       system: 'IMPACT DELIVERY SYSTEM' },
+function useIsMobile() {
+  const [mobile, setMobile] = useState(false)
+  const check = useCallback(() => setMobile(window.innerWidth < 768), [])
+  useEffect(() => { check(); window.addEventListener('resize', check); return () => window.removeEventListener('resize', check) }, [check])
+  return mobile
 }
-const CATS = Object.entries(CAT_META).map(([key, v]) => ({
-  key: key as PortfolioCategory, ...v,
-  count: siteData.gallery[key as PortfolioCategory].length,
-}))
 
-// ─── Modal ────────────────────────────────────────────
+const CAT_LABEL: Record<PortfolioCategory, string> = {
+  visual:    'BRANDING',
+  web:       'WEB DESIGN',
+  photo:     'PHOTOGRAPHY',
+  marketing: 'MARKETING',
+}
+
+function buildItems() {
+  const out: (PortfolioItem & { cat: PortfolioCategory; catLabel: string; index: number })[] = []
+  let idx = 0
+  for (const [key, items] of Object.entries(siteData.gallery) as [PortfolioCategory, PortfolioItem[]][]) {
+    for (const item of items) {
+      out.push({ ...item, cat: key, catLabel: CAT_LABEL[key], index: ++idx })
+    }
+  }
+  return out
+}
+
+const ALL_ITEMS = buildItems()
+
+// ─── Modal ───────────────────────────────────────────────────
 function Modal({ item, onClose }: { item: PortfolioItem; onClose: () => void }) {
-  const [idx, setIdx] = useState(0)
+  const [imgIdx, setImgIdx] = useState(0)
   const imgs = [item.thumbnail, ...item.images]
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      style={{ position: 'fixed', inset: 0, zIndex: 9000, background: 'rgba(10,10,9,0.96)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9000,
+        background: 'rgba(10,10,10,0.94)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 24,
+      }}
       onClick={onClose}
     >
       <motion.div
-        initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}
-        transition={{ duration: 0.3 }}
-        style={{ background: 'var(--white)', maxWidth: 1000, width: '100%', maxHeight: '92vh', overflow: 'auto' }}
+        initial={{ y: 24, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 24, opacity: 0 }} transition={{ duration: 0.32 }}
+        style={{
+          background: 'var(--white)', maxWidth: 960, width: '100%',
+          maxHeight: '92vh', overflow: 'auto',
+        }}
         onClick={e => e.stopPropagation()}
       >
-        {/* Image */}
         <div style={{ position: 'relative', aspectRatio: '16/9', background: 'var(--gray-100)' }}>
-          <img src={imgs[idx]} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          {/* Corner marks */}
-          {[{t:0,l:0},{t:0,r:0},{b:0,l:0},{b:0,r:0}].map((c,i) => (
+          <img src={imgs[imgIdx]} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          {[
+            { top: 0, left: 0 }, { top: 0, right: 0 },
+            { bottom: 0, left: 0 }, { bottom: 0, right: 0 },
+          ].map((pos, i) => (
             <div key={i} style={{
-              position:'absolute', ...c, width:20, height:20,
-              borderTop: 't' in c ? '1px solid var(--lime)' : 'none',
-              borderBottom: 'b' in c ? '1px solid var(--lime)' : 'none',
-              borderLeft: 'l' in c ? '1px solid var(--lime)' : 'none',
-              borderRight: 'r' in c ? '1px solid var(--lime)' : 'none',
-              pointerEvents: 'none',
-            }}/>
+              position: 'absolute', ...pos, width: 20, height: 20, pointerEvents: 'none',
+              borderTop:    'top' in pos ? '1px solid var(--lime)' : 'none',
+              borderBottom: 'bottom' in pos ? '1px solid var(--lime)' : 'none',
+              borderLeft:   'left' in pos ? '1px solid var(--lime)' : 'none',
+              borderRight:  'right' in pos ? '1px solid var(--lime)' : 'none',
+            }} />
           ))}
-          <button onClick={onClose} style={{ position:'absolute', top:16, right:16, width:36, height:36, background:'var(--black)', color:'var(--white)', fontSize:18, display:'flex', alignItems:'center', justifyContent:'center', border:'none', cursor:'pointer' }}>×</button>
+          <button onClick={onClose} style={{
+            position: 'absolute', top: 14, right: 14,
+            width: 34, height: 34, background: 'var(--black)', color: 'var(--white)',
+            fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: 'none', cursor: 'pointer',
+          }}>×</button>
         </div>
-        {/* Thumbnails */}
         {imgs.length > 1 && (
-          <div style={{ display:'flex', gap:2, padding:'8px 16px', background:'var(--gray-100)', overflowX:'auto' }}>
+          <div style={{ display: 'flex', gap: 2, padding: '8px 16px', background: 'var(--gray-100)', overflowX: 'auto' }}>
             {imgs.map((img, i) => (
-              <button key={i} onClick={() => setIdx(i)} style={{ width:64, height:42, flexShrink:0, border: i===idx ? '2px solid var(--lime)' : '2px solid transparent', cursor:'pointer', padding:0 }}>
-                <img src={img} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+              <button key={i} onClick={() => setImgIdx(i)} style={{
+                width: 60, height: 40, flexShrink: 0, padding: 0, cursor: 'pointer',
+                border: i === imgIdx ? '2px solid var(--lime)' : '2px solid transparent',
+              }}>
+                <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </button>
             ))}
           </div>
         )}
-        {/* Content */}
-        <div style={{ padding:'32px 40px 40px' }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:16 }}>
+        <div style={{ padding: '28px 36px 36px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
             <div>
-              <p className="nd-label" style={{ marginBottom:8 }}>{item.client}</p>
-              <h3 style={{ fontSize:28, fontWeight:700, letterSpacing:'-0.03em', color:'var(--black)' }}>{item.title}</h3>
+              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.26em', textTransform: 'uppercase', color: 'var(--lime)', marginBottom: 8 }}>
+                {item.client}
+              </p>
+              <h3 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--black)' }}>
+                {item.title}
+              </h3>
             </div>
-            <span className="nd-index" style={{ paddingTop:4, flexShrink:0 }}>{item.year}</span>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--gray-400)', paddingTop: 4 }}>
+              {item.year}
+            </span>
           </div>
-          <p style={{ fontSize:15, lineHeight:1.8, color:'var(--gray-600)' }}>{item.description}</p>
+          <p style={{ fontSize: 14, lineHeight: 1.8, color: 'var(--gray-600)' }}>{item.description}</p>
           {item.external_site_url && (
-            <a href={item.external_site_url} target="_blank" rel="noopener noreferrer" className="nd-btn-outline" style={{ marginTop:24, display:'inline-flex' }}>
+            <a href={item.external_site_url} target="_blank" rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 24,
+                padding: '9px 20px', border: '1px solid var(--black)',
+                fontSize: 12, fontWeight: 600, letterSpacing: '0.08em',
+                color: 'var(--black)', textDecoration: 'none',
+                transition: 'background 0.2s, color 0.2s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--black)'; e.currentTarget.style.color = 'var(--white)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--black)' }}
+            >
               Visit Website →
             </a>
           )}
@@ -78,214 +131,279 @@ function Modal({ item, onClose }: { item: PortfolioItem; onClose: () => void }) 
   )
 }
 
-// ─── Project Card — "브랜드 구조 문서" ───────────────────
-function ProjectCard({ item, index, onClick }: { item: PortfolioItem; index: number; onClick: () => void }) {
+// ─── Reality Record ──────────────────────────────────────────
+function RealityRecord({
+  item,
+  expanded,
+  onToggle,
+  onOpenModal,
+  mobile,
+}: {
+  item: PortfolioItem & { cat: PortfolioCategory; catLabel: string; index: number }
+  expanded: boolean
+  onToggle: () => void
+  onOpenModal: () => void
+  mobile: boolean
+}) {
   const [hov, setHov] = useState(false)
-  const idx = String(index + 1).padStart(3, '0')
+  const active = hov || expanded
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: index * 0.035, ease: [0.22, 1, 0.36, 1] }}
+    <div
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
-      onClick={onClick}
-      style={{
-        cursor: 'pointer',
-        background: 'var(--white)',
-        border: `1px solid ${hov ? 'var(--black)' : 'var(--gray-200)'}`,
-        transition: 'border-color 0.2s ease',
-      }}
+      style={{ position: 'relative' }}
     >
-      {/* Image */}
-      <div style={{ position: 'relative', paddingTop: '68%', overflow: 'hidden', background: 'var(--gray-100)' }}>
-        <img
-          src={item.thumbnail}
-          alt={item.title}
-          style={{
-            position: 'absolute', inset: 0, width: '100%', height: '100%',
-            objectFit: 'cover', objectPosition: 'center',
-            transform: hov ? 'scale(1.035)' : 'scale(1)',
-            filter: hov ? 'saturate(1)' : 'saturate(0.7)',
-            transition: 'transform 0.7s cubic-bezier(0.22,1,0.36,1), filter 0.4s ease',
-          }}
-        />
+      {/* 구분선 — 라임 블리드 */}
+      <div style={{
+        height: 1,
+        background: active
+          ? 'linear-gradient(90deg, var(--lime) 0%, rgba(203,219,42,0.3) 40%, rgba(0,174,239,0.08) 70%, transparent 100%)'
+          : 'var(--gray-200)',
+        margin: '0 calc(var(--header-h) * -0.6)',
+        transition: 'background 0.55s ease',
+      }} />
 
-        {/* 측정 코너 마크 */}
-        {(['tl','tr','bl','br'] as const).map(pos => (
-          <div key={pos} style={{
-            position: 'absolute',
-            top:    pos.startsWith('t') ? 0 : undefined,
-            bottom: pos.startsWith('b') ? 0 : undefined,
-            left:   pos.endsWith('l')   ? 0 : undefined,
-            right:  pos.endsWith('r')   ? 0 : undefined,
-            width: 16, height: 16, pointerEvents: 'none',
-            borderTop:    pos.startsWith('t') ? `1px solid ${hov ? 'var(--lime)' : 'transparent'}` : 'none',
-            borderBottom: pos.startsWith('b') ? `1px solid ${hov ? 'var(--lime)' : 'transparent'}` : 'none',
-            borderLeft:   pos.endsWith('l')   ? `1px solid ${hov ? 'var(--lime)' : 'transparent'}` : 'none',
-            borderRight:  pos.endsWith('r')   ? `1px solid ${hov ? 'var(--lime)' : 'transparent'}` : 'none',
-            transition: 'border-color 0.2s ease',
-          }} />
-        ))}
-
-        {/* 인덱스 배지 */}
-        <div style={{
-          position: 'absolute', top: 10, left: 10,
-          background: hov ? 'var(--lime)' : 'rgba(10,10,10,0.65)',
-          color: hov ? 'var(--black)' : 'var(--white)',
-          fontSize: 9, fontWeight: 700, letterSpacing: '0.1em',
-          padding: '3px 7px',
-          fontFamily: 'var(--mono)',
-          transition: 'all 0.22s ease',
-        }}>
-          {idx}
-        </div>
-      </div>
-
-      {/* 구조 정보 */}
-      <div style={{ padding: '12px 14px 16px', borderTop: `1px solid ${hov ? 'var(--gray-200)' : 'var(--gray-100)'}` }}>
-        <p style={{
-          fontSize: 9, fontWeight: 700, letterSpacing: '0.24em',
-          textTransform: 'uppercase', color: 'var(--lime)', marginBottom: 5,
-        }}>
-          {item.client}
-        </p>
-        <p style={{
-          fontSize: 14, fontWeight: 600, letterSpacing: '-0.02em',
-          color: 'var(--black)', marginBottom: 10, lineHeight: 1.3,
-        }}>
-          {item.title}
-        </p>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      {/* Row */}
+      <div
+        onClick={onToggle}
+        style={{
+          display: 'grid',
+          gridTemplateColumns: mobile ? '52px 1fr' : '80px 1fr 100px',
+          gap: mobile ? 14 : 28,
+          alignItems: 'start',
+          padding: `${expanded ? 28 : 22}px 0`,
+          transition: 'padding 0.4s var(--reality-ease)',
+          cursor: 'pointer',
+        }}
+      >
+        {/* Coordinate */}
+        <div style={{ paddingTop: 2 }}>
           <span style={{
-            fontFamily: 'var(--mono)', fontSize: 10,
-            color: 'var(--gray-400)', letterSpacing: '0.06em',
+            display: 'block',
+            fontFamily: 'var(--mono)', fontSize: 8,
+            letterSpacing: '0.14em', textTransform: 'uppercase',
+            color: active ? 'var(--lime)' : 'var(--gray-400)',
+            transition: 'color 0.35s ease', marginBottom: 5,
+          }}>
+            R.{String(item.index).padStart(2, '0')}
+          </span>
+          <span style={{
+            display: 'block',
+            fontFamily: 'var(--mono)', fontSize: 7,
+            letterSpacing: '0.16em',
+            color: active ? 'var(--gray-600)' : 'var(--gray-400)',
+            transition: 'color 0.35s ease',
           }}>
             {item.year}
           </span>
-          <span style={{
-            fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase',
-            color: hov ? 'var(--black)' : 'var(--gray-200)',
-            transition: 'color 0.2s ease',
-          }}>
-            ENTRY →
-          </span>
         </div>
+
+        {/* Title + expand */}
+        <div>
+          <div style={{
+            display: 'flex', alignItems: 'baseline',
+            gap: mobile ? 10 : 18, flexWrap: 'wrap', marginBottom: 2,
+          }}>
+            <h3 style={{
+              fontSize: mobile ? 'clamp(20px,5vw,30px)' : 'clamp(22px,3vw,48px)',
+              fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1,
+              color: active ? 'var(--black)' : 'var(--gray-600)',
+              transform: active ? 'translateX(8px)' : 'none',
+              transition: 'color 0.35s ease, transform 0.65s var(--reality-ease)',
+            }}>
+              {item.title}
+            </h3>
+            {item.client && (
+              <span style={{
+                fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase',
+                color: active ? 'var(--lime)' : 'var(--gray-400)',
+                transition: 'color 0.35s ease',
+                whiteSpace: 'nowrap',
+              }}>
+                — {item.client}
+              </span>
+            )}
+          </div>
+
+          {/* Expanded content */}
+          <div style={{
+            overflow: 'hidden',
+            maxHeight: expanded ? '360px' : 0,
+            opacity: expanded ? 1 : 0,
+            transition: 'max-height 0.6s var(--reality-ease), opacity 0.38s ease',
+          }}>
+            <div style={{
+              paddingTop: 20,
+              display: 'grid',
+              gridTemplateColumns: mobile ? '1fr' : '1fr 200px',
+              gap: 28, alignItems: 'start',
+            }}>
+              <div>
+                <p style={{
+                  fontSize: 13, fontWeight: 400, lineHeight: 1.8,
+                  color: 'var(--gray-600)', letterSpacing: '0.01em',
+                  marginBottom: 18,
+                }}>
+                  {item.description}
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
+                  <div style={{ width: 20, height: 1, background: 'var(--lime)' }} />
+                  <span style={{
+                    fontFamily: 'var(--mono)', fontSize: 7,
+                    letterSpacing: '0.16em', color: 'rgba(0,174,239,0.5)',
+                    textTransform: 'uppercase',
+                  }}>
+                    REALITY.{String(item.index).padStart(2, '0')} / NEWDIA STRUCTURE
+                  </span>
+                </div>
+                <button
+                  onClick={e => { e.stopPropagation(); onOpenModal() }}
+                  style={{
+                    padding: '8px 18px',
+                    border: '1px solid var(--black)',
+                    background: 'transparent',
+                    fontSize: 10, fontWeight: 700,
+                    letterSpacing: '0.16em', textTransform: 'uppercase',
+                    color: 'var(--black)', cursor: 'pointer',
+                    transition: 'background 0.2s, color 0.2s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--black)'; e.currentTarget.style.color = '#fff' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--black)' }}
+                >
+                  OPEN RECORD →
+                </button>
+              </div>
+              {!mobile && (
+                <div style={{ position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
+                  <img
+                    src={item.thumbnail} alt={item.title}
+                    style={{
+                      width: '100%', aspectRatio: '4/3', objectFit: 'cover',
+                      display: 'block',
+                      filter: 'saturate(0.6) brightness(0.92)',
+                    }}
+                  />
+                  <div style={{
+                    position: 'absolute', inset: 0, pointerEvents: 'none',
+                    backgroundImage: [
+                      'linear-gradient(rgba(203,219,42,0.08) 1px, transparent 1px)',
+                      'linear-gradient(90deg, rgba(203,219,42,0.08) 1px, transparent 1px)',
+                    ].join(','),
+                    backgroundSize: '80px 80px',
+                    mixBlendMode: 'multiply',
+                  }} />
+                  <div style={{ position:'absolute', top:6, left:6, width:10, height:10, borderTop:'1px solid var(--lime)', borderLeft:'1px solid var(--lime)' }} />
+                  <div style={{ position:'absolute', bottom:6, right:6, width:10, height:10, borderBottom:'1px solid var(--lime)', borderRight:'1px solid var(--lime)' }} />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Category */}
+        {!mobile && (
+          <div style={{ textAlign: 'right', paddingTop: 2 }}>
+            <span style={{
+              fontFamily: 'var(--mono)', fontSize: 7,
+              fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase',
+              color: active ? 'var(--black)' : 'var(--gray-400)',
+              transition: 'color 0.35s ease',
+            }}>
+              {item.catLabel}
+            </span>
+          </div>
+        )}
       </div>
-    </motion.div>
+    </div>
   )
 }
 
-// ─── Main Component ──────────────────────────────────────
+// ─── Main ────────────────────────────────────────────────────
 export default function Portfolio() {
-  const [cat, setCat] = useState<PortfolioCategory>('visual')
-  const [selected, setSelected] = useState<PortfolioItem | null>(null)
-  const items = siteData.gallery[cat]
-  const meta = CAT_META[cat]
+  const [expandedId, setExpandedId] = useState<number | null>(null)
+  const [modalItem, setModalItem] = useState<(PortfolioItem & { cat: PortfolioCategory; catLabel: string; index: number }) | null>(null)
+  const mobile = useIsMobile()
 
   return (
     <section id="portfolio" style={{ background: 'var(--white)' }}>
 
-      {/* ── Category Navigation — 아키텍처 탭 ── */}
-      <div style={{ borderTop: '1px solid var(--gray-200)', borderBottom: '1px solid var(--gray-200)' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)' }}>
-          {CATS.map((c, i) => (
-            <button
-              key={c.key}
-              onClick={() => setCat(c.key)}
-              style={{
-                padding: '18px 20px',
-                background: cat === c.key ? 'var(--black)' : 'transparent',
-                borderRight: i < 3 ? '1px solid var(--gray-200)' : 'none',
-                border: 'none', cursor: 'pointer',
-                textAlign: 'left',
-                transition: 'background 0.25s ease',
-              }}
-            >
-              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: cat === c.key ? 'var(--lime)' : 'var(--gray-400)', marginBottom: 5 }}>
-                {c.index}
-              </p>
-              <p style={{ fontSize: 13, fontWeight: 600, color: cat === c.key ? 'var(--white)' : 'var(--black)', letterSpacing: '0.01em' }}>
-                {c.label}
-              </p>
-              <p style={{ fontSize: 10, color: cat === c.key ? 'rgba(255,255,255,0.3)' : 'var(--gray-400)', marginTop: 3, fontFamily: 'var(--mono)' }}>
-                {c.count}
-              </p>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Category Header — Editorial 대형 타이포 ── */}
-      <div className="nd-container">
+      {/* ── Header ── */}
+      <div style={{
+        borderTop: '1px solid var(--gray-200)',
+        padding: 'clamp(64px,9vh,100px) clamp(24px,6vw,80px)',
+      }}>
         <div style={{
-          display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between',
-          paddingTop: 64, paddingBottom: 40,
-          borderBottom: '1px solid var(--gray-200)',
+          maxWidth: 1200, margin: '0 auto',
+          display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr',
+          gap: 28, alignItems: 'end',
         }}>
           <div>
-            <AnimatePresence mode="wait">
-              <motion.div key={cat} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
-                <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--lime)', marginBottom: 12 }}>
-                  {meta.system}
-                </p>
-                <h2 style={{
-                  fontSize: 'clamp(52px, 8vw, 104px)',
-                  fontWeight: 700,
-                  letterSpacing: '-0.055em',
-                  lineHeight: 0.9,
-                  color: 'var(--black)',
-                }}>
-                  {meta.label}
-                </h2>
-              </motion.div>
-            </AnimatePresence>
+            <p style={{
+              fontFamily: 'var(--mono)', fontSize: 8,
+              fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase',
+              color: 'var(--gray-400)', marginBottom: 16,
+            }}>
+              04 / Reality Archive
+            </p>
+            <h2 style={{
+              fontSize: 'clamp(32px,5vw,68px)',
+              fontWeight: 700, letterSpacing: '-0.035em', lineHeight: 1.0,
+              color: 'var(--black)',
+            }}>
+              {ALL_ITEMS.length} Realities.<br />
+              <span style={{ color: 'var(--lime)' }}>One Source.</span>
+            </h2>
           </div>
-
-          {/* 대형 인덱스 번호 */}
-          <AnimatePresence mode="wait">
-            <motion.div key={`num-${cat}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }} style={{ textAlign: 'right', paddingBottom: 6 }}>
-              <p style={{
-                fontSize: 'clamp(60px, 9vw, 112px)',
-                fontWeight: 700,
-                letterSpacing: '-0.06em',
-                color: 'var(--gray-100)',
-                lineHeight: 1,
-                marginBottom: 6,
-                fontFamily: 'var(--mono)',
-              }}>
-                {meta.index}
-              </p>
-              <p style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--gray-400)', letterSpacing: '0.1em' }}>
-                {items.length} ENTRIES
-              </p>
-            </motion.div>
-          </AnimatePresence>
+          <div>
+            <p style={{
+              fontSize: 13, lineHeight: 1.85,
+              color: 'var(--gray-600)', letterSpacing: '0.01em', marginBottom: 20,
+            }}>
+              NEWDIA가 구축한 현실들.<br />
+              각 레코드는 동일 구조의 다른 상태(state)다.
+            </p>
+            {/* SM coordinate marker */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              fontFamily: 'var(--mono)', fontSize: 7,
+              letterSpacing: '0.16em', color: 'rgba(0,174,239,0.35)',
+              textTransform: 'uppercase',
+            }}>
+              <div style={{ width: 24, height: 1, background: 'rgba(0,174,239,0.25)' }} />
+              PERSPECTIVE ENGINE READS THIS ARCHIVE
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* ── Grid ── */}
-      <div className="nd-container" style={{ paddingTop: 40, paddingBottom: 120 }}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={cat}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 2 }}
-          >
-            {items.map((item, i) => (
-              <ProjectCard key={item.id} item={item} index={i} onClick={() => setSelected(item)} />
-            ))}
-          </motion.div>
-        </AnimatePresence>
+      {/* ── Reality Archive List ── */}
+      <div style={{
+        padding: '0 clamp(24px,6vw,80px) clamp(80px,10vh,120px)',
+      }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          {ALL_ITEMS.map(item => (
+            <RealityRecord
+              key={item.id}
+              item={item}
+              expanded={expandedId === item.id}
+              onToggle={() => setExpandedId(prev => prev === item.id ? null : item.id)}
+              onOpenModal={() => setModalItem(item)}
+              mobile={mobile}
+            />
+          ))}
+          {/* Final rule */}
+          <div style={{
+            height: 1,
+            background: 'var(--gray-200)',
+            margin: '0 calc(var(--header-h) * -0.6)',
+          }} />
+        </div>
       </div>
 
       {/* Modal */}
       <AnimatePresence>
-        {selected && <Modal item={selected} onClose={() => setSelected(null)} />}
+        {modalItem && <Modal item={modalItem} onClose={() => setModalItem(null)} />}
       </AnimatePresence>
     </section>
   )
