@@ -89,13 +89,14 @@ export default function Nav() {
                   position: 'absolute', inset: 0,
                   background: 'var(--black)',
                   transformOrigin: 'center',
+                  transform: 'scaleY(0.012)',
+                  transition: 'transform 0.52s cubic-bezier(0.16,1,0.3,1)',
                   overflow: 'hidden',
                   cursor: 'pointer',
                 }}
                 onMouseEnter={e => {
                   const el = e.currentTarget
                   el.style.transform = 'scaleY(1)'
-                  el.style.transition = 'transform 0.52s cubic-bezier(0.16,1,0.3,1)'
                   const grid = el.querySelector('.sm-grid-inner') as HTMLElement
                   if (grid) { grid.style.opacity = '1'; grid.style.transition = 'opacity 0.28s ease 0.24s' }
                   const rest = el.nextElementSibling as HTMLElement
