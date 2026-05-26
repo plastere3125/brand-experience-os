@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { useReality } from '@/contexts/RealityContext'
 
@@ -91,35 +92,39 @@ function PerspectiveHero() {
         backgroundSize: '44px 44px',
       }} />
 
-      {/* M Symbol */}
+      {/* SM Symbol */}
       <div ref={symRef} style={{
         position: 'relative', width: '220px', height: '220px', marginBottom: '36px',
         willChange: 'transform', zIndex: 1, opacity: 0,
       }}>
-        {/* Wireframe layer */}
-        <div ref={wireRef} style={{ position: 'absolute', inset: 0, opacity: 0, willChange: 'transform,opacity' }}>
-          <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', transform: 'perspective(700px) rotateY(12deg)' }}>
-            <g fill="none" stroke="rgba(0,174,239,0.5)" strokeWidth="1.5" strokeLinejoin="round">
-              <polyline points="8,86 8,14 32,50 50,14 68,50 92,14 92,86"/>
-              <line x1="8" y1="86" x2="92" y2="86" strokeDasharray="4,3"/>
-              <line x1="8" y1="50" x2="92" y2="50" strokeDasharray="2,5" opacity="0.4"/>
-            </g>
-          </svg>
+        {/* Depth ghost layer */}
+        <div ref={depthRef} style={{
+          position: 'absolute', inset: 0, opacity: 0,
+          willChange: 'transform,opacity', filter: 'blur(1px)',
+        }}>
+          <Image src="/SM_CI-08.svg" alt="" width={220} height={220}
+            style={{ width: '100%', height: '100%', opacity: 0.2,
+              filter: 'brightness(0) saturate(0) invert(1) sepia(1) saturate(2) hue-rotate(180deg)',
+              transform: 'perspective(700px) rotateY(-14deg)',
+            }}
+          />
         </div>
-        {/* Depth ghost */}
-        <div ref={depthRef} style={{ position: 'absolute', inset: 0, opacity: 0, willChange: 'transform,opacity' }}>
-          <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', transform: 'perspective(700px) rotateY(-14deg)', opacity: 0.4 }}>
-            <g fill="none" stroke="rgba(203,219,42,0.35)" strokeWidth="1" strokeLinejoin="round">
-              <polyline points="8,86 8,14 32,50 50,14 68,50 92,14 92,86"/>
-            </g>
-          </svg>
+        {/* Wireframe echo layer */}
+        <div ref={wireRef} style={{
+          position: 'absolute', inset: 0, opacity: 0,
+          willChange: 'transform,opacity',
+        }}>
+          <Image src="/SM_CI-08.svg" alt="" width={220} height={220}
+            style={{ width: '100%', height: '100%', opacity: 0.18,
+              filter: 'brightness(0) saturate(0) invert(1) sepia(1) saturate(3) hue-rotate(165deg)',
+              transform: 'perspective(700px) rotateY(12deg)',
+            }}
+          />
         </div>
-        {/* Main M */}
-        <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', position: 'relative', zIndex: 1 }}>
-          <g fill="none" stroke="#ffffff" strokeWidth="5.5" strokeLinejoin="round">
-            <polyline points="8,86 8,14 32,50 50,14 68,50 92,14 92,86"/>
-          </g>
-        </svg>
+        {/* Main symbol */}
+        <Image src="/SM_CI-08.svg" alt="STUDIO MONSTER" width={220} height={220}
+          style={{ width: '100%', height: '100%', position: 'relative', zIndex: 1 }}
+        />
       </div>
 
       {/* Copy */}
