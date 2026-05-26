@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import MLogo from './MLogo'
+import { getRealityShiftUrl } from '@beos/core/bridge'
 
 const NAV_LINKS = [
   { id: 'about',     label: 'About' },
@@ -57,8 +58,11 @@ export default function Nav() {
 
   const returnToStructure = () => {
     setTransitioning(true)
-    const dest = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://beos-newdia.vercel.app'
-    setTimeout(() => { window.location.href = `${dest}?from=monster` }, 700)
+    const dest = getRealityShiftUrl(
+      { dev: 'http://localhost:3000', prod: 'https://beos-newdia.vercel.app' },
+      'monster'
+    )
+    setTimeout(() => { window.location.href = dest }, 700)
   }
 
   return (

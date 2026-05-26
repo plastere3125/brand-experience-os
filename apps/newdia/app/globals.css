@@ -191,6 +191,29 @@ ul { list-style: none; padding: 0; margin: 0; }
 }
 
 /* ══════════════════════════════════════════
+   STRUCTURAL GHOST — SM 균열 흔적
+   NEWDIA 내부에 Perspective Reality가 침투
+═══════════════════════════════════════════ */
+
+@keyframes sm-crack-breathe {
+  0%, 100% { opacity: 0; }
+  50%       { opacity: 1; }
+}
+
+/* SM 44px 균열 grid — 극도로 미세 */
+.sm-crack-ghost {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,174,239,0.016) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,174,239,0.016) 1px, transparent 1px);
+  background-size: 44px 44px;
+  animation: sm-crack-breathe 14s ease-in-out 2s infinite;
+}
+
+/* ══════════════════════════════════════════
    PERSPECTIVE MODE — Reality Translation
    Structure collapses into Monster
 ═══════════════════════════════════════════ */

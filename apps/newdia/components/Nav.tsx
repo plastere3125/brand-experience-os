@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useReality } from '@/contexts/RealityContext'
+import { getRealityShiftUrl } from '@beos/core/bridge'
 
 const NAV_ITEMS = [
   { label: 'About',     href: '#about' },
@@ -31,10 +32,11 @@ export default function Nav() {
 
   const handleShift = () => {
     setShifting(true)
-    setTimeout(() => {
-      shift()
-      setShifting(false)
-    }, 700)
+    const dest = getRealityShiftUrl(
+      { dev: 'http://localhost:3001', prod: 'https://beos-studio-monster.vercel.app' },
+      'newdia'
+    )
+    setTimeout(() => { window.location.href = dest }, 700)
   }
 
   const handleReset = () => {

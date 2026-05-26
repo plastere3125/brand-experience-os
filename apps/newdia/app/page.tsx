@@ -11,6 +11,8 @@ import RealityShiftEngine from '@/components/RealityShiftEngine'
 export default function Home() {
   return (
     <>
+      {/* SM 균열 흔적 — NEWDIA 내부에 Perspective Reality가 침투 */}
+      <div className="sm-crack-ghost" aria-hidden="true" />
       <Nav />
       <main>
         <Hero />

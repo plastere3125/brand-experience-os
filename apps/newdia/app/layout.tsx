@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { RealityProvider } from '@/contexts/RealityContext'
+import { RealityArrivalOverlay } from '@beos/core/bridge'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body>
+        <RealityArrivalOverlay />
         <RealityProvider>{children}</RealityProvider>
       </body>
     </html>

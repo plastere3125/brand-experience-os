@@ -26,6 +26,9 @@ export default function Home() {
 
   return (
     <>
+      {/* NEWDIA 구조 흔적 — SM 내부에 Structure Reality가 침투 */}
+      <div className="nd-structure-ghost-sm" aria-hidden="true" />
+      <div className="nd-lime-ghost" aria-hidden="true" />
       <ClientCursor />
       <Nav />
       <main>

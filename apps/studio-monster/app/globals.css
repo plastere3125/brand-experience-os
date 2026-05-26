@@ -58,6 +58,47 @@ body.ch .crr { width: 64px; height: 64px; border-color: rgba(0,174,239,.28); }
   .cr, .crr { display: none !important; }
 }
 
+/* ══════════════════════════════════════════
+   STRUCTURAL GHOST — NEWDIA 구조 흔적
+   SM 내부에 NEWDIA의 80px 구조가 침투한다
+═══════════════════════════════════════════ */
+
+@keyframes nd-ghost-breathe {
+  0%, 100% { opacity: 0; }
+  50%       { opacity: 1; }
+}
+
+@keyframes nd-lime-pulse {
+  0%, 100% { opacity: 0; transform: scaleY(0.6); }
+  50%       { opacity: 1; transform: scaleY(1); }
+}
+
+/* NEWDIA 80px grid 흔적 — 극도로 미세 */
+.nd-structure-ghost-sm {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(203,219,42,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(203,219,42,0.022) 1px, transparent 1px);
+  background-size: 80px 80px;
+  animation: nd-ghost-breathe 12s ease-in-out infinite;
+}
+
+/* NEWDIA lime 수직선 흔적 — 우측에 ghost */
+.nd-lime-ghost {
+  position: fixed;
+  top: 0;
+  right: 12%;
+  width: 1px;
+  height: 45%;
+  background: linear-gradient(to bottom, transparent, rgba(203,219,42,0.18), transparent);
+  pointer-events: none;
+  z-index: 0;
+  animation: nd-lime-pulse 9s ease-in-out 3s infinite;
+}
+
 @keyframes nd-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.3; transform: scale(0.65); }
