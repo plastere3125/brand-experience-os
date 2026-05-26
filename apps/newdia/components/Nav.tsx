@@ -74,21 +74,7 @@ export default function Nav() {
             style={{ display: 'flex', alignItems: 'center', gap: 10 }}
           >
             {isPerspective ? (
-              <>
-                {/* M 심볼 인라인 */}
-                <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
-                  <g stroke="#00AEEF" strokeWidth="5.5" strokeLinejoin="round" fill="none">
-                    <polyline points="8,86 8,14 32,50 50,14 68,50 92,14 92,86"/>
-                  </g>
-                </svg>
-                <span style={{
-                  fontFamily: 'var(--mono)', fontSize: 11, fontWeight: 700,
-                  letterSpacing: '0.22em', textTransform: 'uppercase',
-                  color: '#ffffff',
-                }}>
-                  STUDIO MONSTER
-                </span>
-              </>
+              <Image src="/SM_CI-07.svg" alt="STUDIO MONSTER" width={160} height={57} priority />
             ) : (
               <Image src="/NEWDIA_CI-01.svg" alt="NEWDIA" width={120} height={22} priority />
             )}
