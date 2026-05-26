@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { useReality } from '@/contexts/RealityContext'
 
 type ShiftState = 'dormant' | 'visible' | 'holding' | 'fracturing' | 'translating'
 
@@ -14,43 +15,47 @@ const STYLES = `
 }
 `
 
-function getSmDest() {
-  if (typeof window === 'undefined') return 'https://beos-studio-monster.vercel.app'
-  return window.location.hostname === 'localhost'
-    ? 'http://localhost:3001'
-    : 'https://beos-studio-monster.vercel.app'
-}
-
 export default function RealityShiftEngine() {
+  const { mode, shift, reset } = useReality()
   const [state, setState] = useState<ShiftState>('dormant')
   const [progress, setProgress] = useState(0)
   const holdTimer  = useRef<ReturnType<typeof setTimeout>  | null>(null)
   const progressIv = useRef<ReturnType<typeof setInterval> | null>(null)
   const holding    = useRef(false)
 
-  // 포트폴리오 섹션 진입 시 엔진 활성화
+  // 포트폴리오 섹션 진입 시 엔진 활성화 — structure 모드일 때만
   useEffect(() => {
+    if (mode !== 'structure') return
+
     const activate = () => setState(s => s === 'dormant' ? 'visible' : s)
-
     const sensor = document.getElementById('portfolio')
-    if (sensor) {
-      const obs = new IntersectionObserver(
-        ([e]) => { if (e.isIntersecting) activate() },
-        { threshold: 0.04 }
-      )
-      obs.observe(sensor)
+    if (!sensor) return
 
-      // scroll fallback: 포트폴리오 섹션 상단이 뷰포트 안에 들어오면 활성화
-      const onScroll = () => {
-        const rect = sensor.getBoundingClientRect()
-        if (rect.top < window.innerHeight * 0.9) activate()
-      }
-      window.addEventListener('scroll', onScroll, { passive: true })
-      onScroll() // 이미 보이는 경우
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) activate() },
+      { threshold: 0.04 }
+    )
+    obs.observe(sensor)
 
-      return () => { obs.disconnect(); window.removeEventListener('scroll', onScroll) }
+    const onScroll = () => {
+      const rect = sensor.getBoundingClientRect()
+      if (rect.top < window.innerHeight * 0.9) activate()
     }
-  }, [])
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+
+    return () => { obs.disconnect(); window.removeEventListener('scroll', onScroll) }
+  }, [mode])
+
+  // perspective 모드 진입 시 엔진 리셋 (다음 structure 진입을 위해)
+  useEffect(() => {
+    if (mode === 'perspective') setState('dormant')
+    if (mode === 'structure') {
+      setProgress(0)
+      // 잠시 후 다시 visible 가능 상태로
+      setTimeout(() => setState('dormant'), 100)
+    }
+  }, [mode])
 
   const launchFracture = useCallback(() => {
     setState('fracturing')
@@ -62,10 +67,15 @@ export default function RealityShiftEngine() {
       if (p >= 100) {
         clearInterval(progressIv.current!)
         setState('translating')
-        setTimeout(() => { window.location.href = `${getSmDest()}?from=newdia` }, 1400)
+        // 네비게이션 없음 — 동일 현실 내 모드 전환
+        setTimeout(() => {
+          shift()
+          setProgress(0)
+          setState('dormant')
+        }, 1400)
       }
     }, 28)
-  }, [])
+  }, [shift])
 
   const onEnter = useCallback(() => {
     if (state !== 'visible') return

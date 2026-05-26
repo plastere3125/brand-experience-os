@@ -189,3 +189,52 @@ ul { list-style: none; padding: 0; margin: 0; }
   pointer-events: none; z-index: 8000;
   animation: nd-echo-fade 2.5s ease-out forwards;
 }
+
+/* ══════════════════════════════════════════
+   PERSPECTIVE MODE — Reality Translation
+   Structure collapses into Monster
+═══════════════════════════════════════════ */
+html[data-mode="perspective"] body {
+  background: #0a0a09;
+  color: #ffffff;
+}
+
+html[data-mode="perspective"] ::-webkit-scrollbar-thumb {
+  background: #00AEEF;
+}
+
+html[data-mode="perspective"] ::selection {
+  background: #00AEEF;
+  color: #0a0a09;
+}
+
+/* Nav overrides */
+html[data-mode="perspective"] .nd-btn-primary {
+  background: #00AEEF;
+  color: #0a0a09;
+}
+html[data-mode="perspective"] .nd-btn-primary:hover {
+  background: rgba(0,174,239,0.85);
+}
+html[data-mode="perspective"] .nd-btn-outline {
+  border-color: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.7);
+}
+html[data-mode="perspective"] .nd-btn-outline:hover {
+  background: rgba(255,255,255,0.06);
+  color: #ffffff;
+}
+
+/* Section dividers */
+html[data-mode="perspective"] .nd-section {
+  border-color: rgba(255,255,255,0.055);
+}
+
+/* Grid ghost — 80px ND → 44px SM */
+html[data-mode="perspective"] .nd-structure-ghost {
+  background-image:
+    linear-gradient(rgba(0,174,239,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,174,239,0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 0.6;
+}
